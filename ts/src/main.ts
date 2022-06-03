@@ -12,9 +12,10 @@ function test(): void {
   
   board.setCellValue(CellValue.Cross, 3);
   board.setCellValue(CellValue.Nought, 6);
-  console.log(board.getValue());
-
   board.setCellValue(CellValue.Nought, 4);
   board.setCellValue(CellValue.Nought, 2);
-  console.log(board.getValue());
+
+  board.print();
+  console.log(board.getStatus());
+  console.log(board.updateAndGetStatus());
 }

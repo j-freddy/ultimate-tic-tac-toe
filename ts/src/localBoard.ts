@@ -25,28 +25,51 @@ class LocalBoard implements Cell {
     return this.status;
   }
 
+  updateAndGetStatus(): BoardStatus {
+    // Do not update status if board is not in progress
+    if (this.status !== BoardStatus.InProgress) {
+      console.warn("Attempt to update board status when board is finished.");
+      return this.status;
+    }
+
+    if (this.checkWin(CellValue.Nought)) {
+      this.status = BoardStatus.NoughtWin;
+      return this.status;
+    }
+
+    if (this.checkWin(CellValue.Cross)) {
+      this.status = BoardStatus.CrossWin;
+      return this.status;
+    }
+
+    if (this.checkFull()) {
+      this.status = BoardStatus.Draw;
+      return this.status;
+    }
+
+    this.status = BoardStatus.InProgress;
+    return this.status;
+  }
+
   getCellValue(index: number): CellValue {
     return this.cells[index].getValue();
   }
 
   setCellValue(value: CellValue, index: number): void {
+    if (this.status !== BoardStatus.InProgress) {
+      throw new Error("Trying to set cell of finished board.");
+    }
+
     this.cells[index].setValue(value);
+    this.updateAndGetStatus();
   }
 
   // TODO Refactor to use Player type with player.getValue()
-  checkWin(playerValue: CellValue): boolean {
+  private checkWin(playerValue: CellValue): boolean {
     for (let pattern of this.WIN_PATTERNS) {
       if (this.getCellValue(pattern[0]) === playerValue &&
           this.getCellValue(pattern[1]) === playerValue &&
           this.getCellValue(pattern[2]) === playerValue) {
-        if (playerValue === CellValue.Nought) {
-          this.status = BoardStatus.NoughtWin;
-        }
-
-        if (playerValue === CellValue.Cross) {
-          this.status = BoardStatus.CrossWin;
-        }
-
         return true;
       }
     }
@@ -54,24 +77,23 @@ class LocalBoard implements Cell {
     return false;
   }
 
+  private checkFull(): boolean {
+    for (let cell of this.cells) {
+      if (!cell.isEmpty()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   getValue(): CellValue {
-    // Use cache
     if (this.status === BoardStatus.NoughtWin) return CellValue.Nought;
     if (this.status === BoardStatus.CrossWin)  return CellValue.Cross;
-    if (this.status === BoardStatus.Draw)      return CellValue.Empty;
-
-    // Board was previously in progress
-
-    if (this.checkWin(CellValue.Nought)) {
-      return CellValue.Nought;
-    }
-
-    if (this.checkWin(CellValue.Cross)) {
-      return CellValue.Cross;
-    }
-
+    
     return CellValue.Empty;
   }
+
   setValue(value: CellValue): void {
     throw new Error("Method not implemented.");
   }

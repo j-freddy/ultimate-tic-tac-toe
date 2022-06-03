@@ -1,6 +1,6 @@
 enum BoardStatus {
-  NoughtWin,
-  CrossWin,
-  Draw,
-  InProgress
+  NoughtWin = "NoughtWin",
+  CrossWin = "CrossWin",
+  Draw = "Draw",
+  InProgress = "InProgress"
 }
