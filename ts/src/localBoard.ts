@@ -9,6 +9,7 @@ class LocalBoard implements Cell {
   ]
 
   private cells: LocalCell[];
+  private status: BoardStatus;
 
   constructor() {
     this.cells = [];
@@ -16,6 +17,12 @@ class LocalBoard implements Cell {
     for (let i = 0; i < this.NUM_CELLS; i++) {
       this.cells.push(new LocalCell());
     }
+
+    this.status = BoardStatus.InProgress;
+  }
+
+  getStatus(): BoardStatus {
+    return this.status;
   }
 
   getCellValue(index: number): CellValue {
@@ -26,12 +33,20 @@ class LocalBoard implements Cell {
     this.cells[index].setValue(value);
   }
 
-  // TODO Refactor to use Player type
+  // TODO Refactor to use Player type with player.getValue()
   checkWin(playerValue: CellValue): boolean {
     for (let pattern of this.WIN_PATTERNS) {
       if (this.getCellValue(pattern[0]) === playerValue &&
           this.getCellValue(pattern[1]) === playerValue &&
           this.getCellValue(pattern[2]) === playerValue) {
+        if (playerValue === CellValue.Nought) {
+          this.status = BoardStatus.NoughtWin;
+        }
+
+        if (playerValue === CellValue.Cross) {
+          this.status = BoardStatus.CrossWin;
+        }
+
         return true;
       }
     }
@@ -40,6 +55,13 @@ class LocalBoard implements Cell {
   }
 
   getValue(): CellValue {
+    // Use cache
+    if (this.status === BoardStatus.NoughtWin) return CellValue.Nought;
+    if (this.status === BoardStatus.CrossWin)  return CellValue.Cross;
+    if (this.status === BoardStatus.Draw)      return CellValue.Empty;
+
+    // Board was previously in progress
+
     if (this.checkWin(CellValue.Nought)) {
       return CellValue.Nought;
     }
