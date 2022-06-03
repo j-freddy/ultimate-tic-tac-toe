@@ -8,14 +8,7 @@ window.onload = () => {
 }
 
 function test(): void {
-  const board = new LocalBoard();
-  
-  board.setCellValue(CellValue.Cross, 3);
-  board.setCellValue(CellValue.Nought, 6);
-  board.setCellValue(CellValue.Nought, 4);
-  board.setCellValue(CellValue.Nought, 2);
-
-  board.print();
-  console.log(board.getStatus());
-  console.log(board.updateAndGetStatus());
+  const board = new GlobalBoard();
+  board.setCellValue(CellValue.Cross, 4, 8);
+  console.log(board);
 }

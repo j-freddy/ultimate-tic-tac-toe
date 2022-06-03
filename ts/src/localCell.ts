@@ -11,8 +11,4 @@ class LocalCell implements Cell {
   setValue(value: CellValue): void {
     this.value = value;
   }
-
-  isEmpty(): boolean {
-    return this.value === CellValue.Empty;
-  }
 }
