@@ -9,12 +9,20 @@ class GlobalBoard extends Board {
     }
   }
 
-  getLocalBoard(index: number): LocalBoard {
-    return <LocalBoard> <unknown> this.cells[index];
+  getLocalBoards(): LocalBoard[] {
+    return <LocalBoard[]> this.cells;
+  }
+
+  getLocalBoard(row: number, col: number): LocalBoard {
+    return <LocalBoard> this.cells[row * this.NUM_COLS + col];
+  }
+
+  getLocalBoardByIndex(index: number): LocalBoard {
+    return <LocalBoard> this.cells[index];
   }
 
   setCellValue(value: MarkType, globalIndex: number,
                localIndex: number): void {
-    this.getLocalBoard(globalIndex).setCellValue(value, localIndex);
+    this.getLocalBoardByIndex(globalIndex).setCellValue(value, localIndex);
   }
 }

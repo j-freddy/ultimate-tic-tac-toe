@@ -1,5 +1,5 @@
 const canvas = <HTMLCanvasElement> document.getElementById("main-canvas");
-const ctx = canvas.getContext("2d");
+const ctx = <CanvasRenderingContext2D> canvas.getContext("2d");
 
 window.onload = () => {
   console.log("Hello world!");
@@ -9,6 +9,8 @@ window.onload = () => {
 
 function test(): void {
   const board = new GlobalBoard();
-  board.setCellValue(MarkType.Cross, 4, 8);
-  console.log(board);
+  board.setCellValue(MarkType.O, 0, 0);
+  board.setCellValue(MarkType.O, 5, 3);
+  board.setCellValue(MarkType.X, 7, 8);
+  GUI.drawBoard(board);
 }

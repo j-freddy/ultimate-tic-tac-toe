@@ -1,4 +1,4 @@
 enum MarkType {
-  Nought = "O",
-  Cross = "X"
+  O = "O",
+  X = "X"
 }

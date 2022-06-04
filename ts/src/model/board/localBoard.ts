@@ -19,8 +19,8 @@ class LocalBoard extends Board implements Cell {
   }
 
   getValue(): MarkType | null {
-    if (this.status === BoardStatus.NoughtWin) return MarkType.Nought;
-    if (this.status === BoardStatus.CrossWin)  return MarkType.Cross;
+    if (this.status === BoardStatus.NoughtWin) return MarkType.O;
+    if (this.status === BoardStatus.CrossWin)  return MarkType.X;
     
     return null;
   }
