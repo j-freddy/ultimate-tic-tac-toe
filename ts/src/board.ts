@@ -26,12 +26,12 @@ abstract class Board {
       return this.status;
     }
 
-    if (this.checkWin(CellValue.Nought)) {
+    if (this.checkWin(MarkType.Nought)) {
       this.status = BoardStatus.NoughtWin;
       return this.status;
     }
 
-    if (this.checkWin(CellValue.Cross)) {
+    if (this.checkWin(MarkType.Cross)) {
       this.status = BoardStatus.CrossWin;
       return this.status;
     }
@@ -45,12 +45,12 @@ abstract class Board {
     return this.status;
   }
 
-  getCellValue(index: number): CellValue {
+  getCellValue(index: number): MarkType | null {
     return this.cells[index].getValue();
   }
 
   // TODO Refactor to use Player type with player.getValue()
-  protected checkWin(playerValue: CellValue): boolean {
+  protected checkWin(playerValue: MarkType): boolean {
     for (let pattern of this.WIN_PATTERNS) {
       if (this.getCellValue(pattern[0]) === playerValue &&
           this.getCellValue(pattern[1]) === playerValue &&
@@ -64,7 +64,7 @@ abstract class Board {
 
   protected checkFull(): boolean {
     for (let cell of this.cells) {
-      if (cell.getValue() === CellValue.Empty) {
+      if (!cell.getValue()) {
         return false;
       }
     }
@@ -78,7 +78,13 @@ abstract class Board {
 
     for (let x = 0; x < this.NUM_COLS; x++) {
       for (let y = 0; y < this.NUM_ROWS; y++) {
-        str += `${this.cells[i].getValue()} `
+        let value = this.cells[i].getValue()?.toString();
+
+        if (!value) {
+          value = "-"
+        }
+
+        str += `${value} `
         i++;
       }
       str += "\n";

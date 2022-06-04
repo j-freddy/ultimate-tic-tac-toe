@@ -9,6 +9,6 @@ window.onload = () => {
 
 function test(): void {
   const board = new GlobalBoard();
-  board.setCellValue(CellValue.Cross, 4, 8);
+  board.setCellValue(MarkType.Cross, 4, 8);
   console.log(board);
 }

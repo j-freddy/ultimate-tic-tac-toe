@@ -13,7 +13,7 @@ class GlobalBoard extends Board {
     return <LocalBoard> <unknown> this.cells[index];
   }
 
-  setCellValue(value: CellValue, globalIndex: number,
+  setCellValue(value: MarkType, globalIndex: number,
                localIndex: number): void {
     this.getLocalBoard(globalIndex).setCellValue(value, localIndex);
   }

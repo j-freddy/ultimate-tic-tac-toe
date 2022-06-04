@@ -1,4 +1,4 @@
 interface Cell {
-  getValue(): CellValue;
-  setValue(value: CellValue): void;
+  getValue(): MarkType | null;
+  setValue(value: MarkType): void;
 }

@@ -1,14 +1,14 @@
 class LocalCell implements Cell {
-  private value: CellValue;
+  private value: MarkType | null;
 
   constructor() {
-    this.value = CellValue.Empty;
+    this.value = null;
   }
   
-  getValue(): CellValue {
+  getValue(): MarkType | null {
     return this.value;
   }
-  setValue(value: CellValue): void {
+  setValue(value: MarkType): void {
     this.value = value;
   }
 }

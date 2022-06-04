@@ -9,7 +9,7 @@ class LocalBoard extends Board implements Cell {
     }
   }
 
-  setCellValue(value: CellValue, index: number): void {
+  setCellValue(value: MarkType, index: number): void {
     if (this.status !== BoardStatus.InProgress) {
       throw new Error("Trying to set cell of finished board.");
     }
@@ -18,14 +18,14 @@ class LocalBoard extends Board implements Cell {
     this.updateAndGetStatus();
   }
 
-  getValue(): CellValue {
-    if (this.status === BoardStatus.NoughtWin) return CellValue.Nought;
-    if (this.status === BoardStatus.CrossWin)  return CellValue.Cross;
+  getValue(): MarkType | null {
+    if (this.status === BoardStatus.NoughtWin) return MarkType.Nought;
+    if (this.status === BoardStatus.CrossWin)  return MarkType.Cross;
     
-    return CellValue.Empty;
+    return null;
   }
 
-  setValue(value: CellValue): void {
+  setValue(value: MarkType): void {
     throw new Error("Trying to set value of board.");
   }
 }
