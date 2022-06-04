@@ -12,4 +12,25 @@ class Game {
 
     this.currentPlayer = this.playerCross;
   }
+
+  getBoard(): GlobalBoard {
+    return this.board;
+  }
+
+  private switchPlayer(): Player {
+    if (this.currentPlayer === this.playerNought) {
+      this.currentPlayer = this.playerCross;
+    } else {
+      this.currentPlayer = this.playerNought;
+    }
+
+    return this.currentPlayer;
+  }
+
+  makeMove(globalIndex: number, localIndex: number): void {
+    this.board.setCellValue(this.currentPlayer.getMarkType(), globalIndex,
+                            localIndex);
+    
+    this.switchPlayer();
+  }
 }
