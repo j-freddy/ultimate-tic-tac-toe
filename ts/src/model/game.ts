@@ -27,10 +27,15 @@ class Game {
     return this.currentPlayer;
   }
 
-  makeMove(globalIndex: number, localIndex: number): void {
-    this.board.setCellValue(this.currentPlayer.getMarkType(), globalIndex,
-                            localIndex);
-    
-    this.switchPlayer();
+  makeMove(globalIndex: number, localIndex: number): boolean {
+    try {
+      this.board.setCellValue(this.currentPlayer.getMarkType(), globalIndex,
+                              localIndex);
+      this.switchPlayer();
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
 }

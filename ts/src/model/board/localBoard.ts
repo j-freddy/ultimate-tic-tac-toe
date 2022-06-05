@@ -14,6 +14,11 @@ class LocalBoard extends Board implements Cell {
       throw new Error("Trying to set cell of finished board.");
     }
 
+    // Cell already has a value
+    if (this.cells[index].getValue()) {
+      throw new Error("Trying to set non-empty cell.");
+    }
+
     this.cells[index].setValue(value);
     this.updateAndGetStatus();
   }
