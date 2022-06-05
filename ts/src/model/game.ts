@@ -27,12 +27,26 @@ class Game {
     return this.currentPlayer;
   }
 
+  private ended(): boolean {
+    return this.board.getStatus() !== BoardStatus.InProgress;
+  }
+
   makeMove(globalIndex: number, localIndex: number): boolean {
     try {
+      if (this.ended()) {
+        throw new Error("Trying to make a move when game has ended.");
+      }
+
       this.board.setCellValue(this.currentPlayer.getMarkType(), globalIndex,
                               localIndex);
-      this.switchPlayer();
-      this.board.updateActiveBoards(localIndex);
+
+      if (this.ended()) {
+        console.log("Game ended!");
+      } else {
+        this.switchPlayer();
+        this.board.updateActiveBoards(localIndex);
+      }
+
       return true;
     } catch (e) {
       console.log(e);

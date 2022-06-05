@@ -34,6 +34,7 @@ class GlobalBoard extends Board {
     }
     
     this.getLocalBoardByIndex(globalIndex).setCellValue(value, localIndex);
+    this.updateAndGetStatus();
   }
 
   getBoardsInProgress(): LocalBoard[] {
