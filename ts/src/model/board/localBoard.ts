@@ -1,12 +1,20 @@
 class LocalBoard extends Board implements Cell {
-  constructor() {
+  private readonly index: number;
+
+  constructor(index: number) {
     super();
+
+    this.index = index;
 
     this.cells = [];
 
     for (let i = 0; i < this.NUM_CELLS; i++) {
       this.cells.push(new LocalCell());
     }
+  }
+
+  getIndex(): number {
+    return this.index;
   }
 
   setCellValue(value: MarkType, index: number): void {

@@ -32,6 +32,7 @@ class Game {
       this.board.setCellValue(this.currentPlayer.getMarkType(), globalIndex,
                               localIndex);
       this.switchPlayer();
+      this.board.updateActiveBoards(localIndex);
       return true;
     } catch (e) {
       console.log(e);

@@ -28,6 +28,12 @@ class GUI {
     ctx.stroke();
   }
 
+  private fillRect(x: number, y: number, width: number, height: number,
+                   colour = "#000") {
+    ctx.fillStyle = colour;
+    ctx.fillRect(x, y, width, height);
+  }
+
   drawLocalBoard(board: LocalBoard, xOffset: number, yOffset: number) {
     // TODO Magic numbers
     // TODO Repetition
@@ -35,6 +41,11 @@ class GUI {
     let boardHeight = canvas.height / 3;
     let cellWidth = boardWidth / board.NUM_COLS;
     let cellHeight = boardHeight / board.NUM_ROWS;
+    
+    // Highlight board if active
+    if (this.game.getBoard().getActiveBoards().includes(board)) {
+      this.fillRect(xOffset, yOffset, boardWidth, boardHeight, "#ffff00");
+    }
 
     // Draw frame
     for (let i = 1; i < board.NUM_ROWS; i++) {
