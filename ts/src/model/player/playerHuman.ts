@@ -7,5 +7,9 @@ class PlayerHuman implements Player {
 
   getMarkType(): MarkType {
     return this.markType;
-  }  
+  }
+
+  isBot(): boolean {
+    return false;
+  }
 }

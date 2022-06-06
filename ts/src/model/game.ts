@@ -17,6 +17,10 @@ class Game {
     return this.board;
   }
 
+  getCurrentPlayer(): Player {
+    return this.currentPlayer;
+  }
+
   private switchPlayer(): Player {
     if (this.currentPlayer === this.playerNought) {
       this.currentPlayer = this.playerCross;

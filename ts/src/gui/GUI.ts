@@ -127,9 +127,14 @@ class GUI {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     this.drawGlobalBoard();
   }
-  
+
   private startObservables() {
     canvas.addEventListener("mousedown", e => {
+      // Ignore user commands if current player is not a human
+      if (this.game.getCurrentPlayer().isBot()) {
+        return;
+      }
+
       // TODO Duplicate
       let board = this.game.getBoard();
 
