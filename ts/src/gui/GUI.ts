@@ -6,7 +6,7 @@ class GUI {
 
   private constructor(game: Game) {
     this.game = game;
-    this.startEventHandlers();
+    this.startObservables();
   }
 
   static getInstance(game: Game): GUI {
@@ -127,9 +127,8 @@ class GUI {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     this.drawGlobalBoard();
   }
-
-  // TODO Maybe separate this to a Controller
-  private startEventHandlers() {
+  
+  private startObservables() {
     canvas.addEventListener("mousedown", e => {
       // TODO Duplicate
       let board = this.game.getBoard();
