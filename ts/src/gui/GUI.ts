@@ -17,6 +17,22 @@ class GUI {
     return GUI.instance;
   }
 
+  private getBoardWidth(): number {
+    return canvas.width;
+  }
+
+  private getBoardHeight(): number {
+    return canvas.height;
+  }
+
+  private getLocalBoardWidth(): number {
+    return this.getBoardWidth() / this.game.getBoard().NUM_COLS;
+  }
+
+  private getLocalBoardHeight(): number {
+    return this.getBoardHeight() / this.game.getBoard().NUM_ROWS;
+  }
+  
   private drawLine(x1: number, y1: number, x2: number, y2: number,
                           colour = "#000", width = 1) {
     ctx.lineWidth = width;
@@ -34,11 +50,10 @@ class GUI {
     ctx.fillRect(x, y, width, height);
   }
 
-  drawLocalBoard(board: LocalBoard, xOffset: number, yOffset: number) {
+  drawLocalBoard(board: LocalBoard, xOffset: number, yOffset: number,
+                 boardWidth: number, boardHeight: number) {
     // TODO Magic numbers
     // TODO Repetition
-    let boardWidth = canvas.width / 3;
-    let boardHeight = canvas.height / 3;
     let cellWidth = boardWidth / board.NUM_COLS;
     let cellHeight = boardHeight / board.NUM_ROWS;
     
@@ -81,28 +96,27 @@ class GUI {
   private drawGlobalBoard() {
     let board = this.game.getBoard();
 
-    let boardWidth = canvas.width;
-    let boardHeight = canvas.height;
-    let localBoardWidth = boardWidth / board.NUM_COLS;
-    let localBoardHeight = boardHeight / board.NUM_ROWS;
+    let localBoardWidth = this.getLocalBoardWidth();
+    let localBoardHeight = this.getLocalBoardHeight();
 
     // Draw local boards
     for (let i = 0; i < board.NUM_ROWS; i++) {
       for (let j = 0; j < board.NUM_COLS; j++) {
         this.drawLocalBoard(board.getLocalBoard(i, j), localBoardWidth * j,
-                           localBoardHeight * i);
+                            localBoardHeight * i, localBoardWidth, 
+                            localBoardHeight);
       }
     }
 
     // Draw frame
     for (let i = 1; i < board.NUM_ROWS; i++) {
-      let y = i * boardHeight / board.NUM_ROWS;
-      this.drawLine(0, y, boardWidth, y, "#000", 3);
+      let y = i * this.getBoardHeight() / board.NUM_ROWS;
+      this.drawLine(0, y, this.getBoardWidth(), y, "#000", 3);
     }
 
     for (let i = 1; i < board.NUM_COLS; i++) {
-      let x = i * boardWidth / board.NUM_COLS;
-      this.drawLine(x, 0, x, boardHeight, "#000", 3);
+      let x = i * this.getBoardWidth() / board.NUM_COLS;
+      this.drawLine(x, 0, x, this.getBoardHeight(), "#000", 3);
     }
 
     // Draw Os and Xs
@@ -135,20 +149,18 @@ class GUI {
         return;
       }
 
-      // TODO Duplicate
       let board = this.game.getBoard();
 
-      let boardWidth = canvas.width;
-      let boardHeight = canvas.height;
-      let localBoardWidth = boardWidth / board.NUM_COLS;
-      let localBoardHeight = boardHeight / board.NUM_ROWS;
+      let localBoardWidth = this.getLocalBoardHeight();
+      let localBoardHeight = this.getLocalBoardWidth();
 
       let row = Math.floor(e.offsetY / localBoardHeight);
       let col = Math.floor(e.offsetX / localBoardWidth);
 
       let globalIndex = row * board.NUM_COLS + col;
 
-      // TODO Magic numbers (also duplicate)
+      // TODO Magic numbers
+      // Assume all local boards have same number of rows / columns
       let cellWidth = localBoardWidth / 3;
       let cellHeight = localBoardHeight / 3;
 
