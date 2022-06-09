@@ -99,6 +99,9 @@ class GUI {
     let localBoardWidth = this.getLocalBoardWidth();
     let localBoardHeight = this.getLocalBoardHeight();
 
+    let cellWidth = localBoardWidth / board.NUM_COLS;
+    let cellHeight = localBoardHeight / board.NUM_ROWS;
+
     // Draw local boards
     for (let i = 0; i < board.NUM_ROWS; i++) {
       for (let j = 0; j < board.NUM_COLS; j++) {
@@ -135,6 +138,28 @@ class GUI {
                       localBoardWidth, localBoardHeight);
       }
     }
+
+    // Draw unconfirmed move (on mouse hover)
+    let unconfirmedMove = board.getUnconfirmedMove();
+
+    // Draw if this move exists
+    if (unconfirmedMove) {
+      let cellValue = unconfirmedMove.cell.getValue();
+      let image = cellValue === MarkType.O ? img.o : img.x;
+
+      let outerRow = Math.floor(unconfirmedMove.globalIndex / board.NUM_COLS);
+      let outerCol = unconfirmedMove.globalIndex % board.NUM_COLS;
+      let innerRow = Math.floor(unconfirmedMove.localIndex / board.NUM_COLS);
+      let innerCol = unconfirmedMove.localIndex % board.NUM_COLS;
+
+      ctx.save();
+      ctx.globalAlpha = 0.4;
+      ctx.drawImage(image,
+                    localBoardWidth * outerCol + cellWidth * innerCol,
+                    localBoardHeight * outerRow + cellHeight * innerRow,
+                    cellWidth, cellHeight);
+      ctx.restore();
+    }
   }
 
   refresh() {
@@ -142,34 +167,67 @@ class GUI {
     this.drawGlobalBoard();
   }
 
+  private getPositionOnBoard(x: number, y: number): BoardPosition {
+    let board = this.game.getBoard();
+
+    let localBoardWidth = this.getLocalBoardHeight();
+    let localBoardHeight = this.getLocalBoardWidth();
+
+    let row = Math.floor(y / localBoardHeight);
+    let col = Math.floor(x / localBoardWidth);
+
+    let globalIndex = row * board.NUM_COLS + col;
+
+    // TODO Magic numbers
+    // Assume all local boards have same number of rows / columns
+    let cellWidth = localBoardWidth / 3;
+    let cellHeight = localBoardHeight / 3;
+
+    let innerRow = Math.floor((y % localBoardHeight) / cellHeight);
+    let innerCol = Math.floor((x % localBoardWidth) / cellWidth);
+
+    let localIndex = innerRow * 3 + innerCol;
+
+    return {
+      globalIndex: globalIndex,
+      localIndex: localIndex
+    }
+  }
+
   private startObservables() {
+    canvas.addEventListener("mousemove", e => {
+      // Ignore user commands if current player is not a human
+      if (this.game.getCurrentPlayer().isBot()) {
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      let pos = this.getPositionOnBoard(e.clientX - rect.left,
+                                        e.clientY - rect.top);
+      let cell = new LocalCell();
+      cell.setValue(this.game.getCurrentPlayer().getMarkType());
+
+      this.game.getBoard().setUnconfirmedMove({
+        cell: cell,
+        globalIndex: pos.globalIndex,
+        localIndex: pos.localIndex
+      });
+
+      // Update
+      this.refresh();
+    });
+
     canvas.addEventListener("mousedown", e => {
       // Ignore user commands if current player is not a human
       if (this.game.getCurrentPlayer().isBot()) {
         return;
       }
 
-      let board = this.game.getBoard();
+      const rect = canvas.getBoundingClientRect();
+      let pos = this.getPositionOnBoard(e.clientX - rect.left,
+                                        e.clientY - rect.top);
 
-      let localBoardWidth = this.getLocalBoardHeight();
-      let localBoardHeight = this.getLocalBoardWidth();
-
-      let row = Math.floor(e.offsetY / localBoardHeight);
-      let col = Math.floor(e.offsetX / localBoardWidth);
-
-      let globalIndex = row * board.NUM_COLS + col;
-
-      // TODO Magic numbers
-      // Assume all local boards have same number of rows / columns
-      let cellWidth = localBoardWidth / 3;
-      let cellHeight = localBoardHeight / 3;
-
-      let innerRow = Math.floor((e.offsetY % localBoardHeight) / cellHeight);
-      let innerCol = Math.floor((e.offsetX % localBoardWidth) / cellWidth);
-
-      let localIndex = innerRow * 3 + innerCol;
-
-      this.game.makeMove(globalIndex, localIndex);
+      this.game.makeMove(pos.globalIndex, pos.localIndex);
 
       // Update
       this.refresh();

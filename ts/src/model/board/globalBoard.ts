@@ -1,6 +1,8 @@
 class GlobalBoard extends Board {
   // List of boards a player can make a move on
   private activeBoards: LocalBoard[];
+  // Potential move a player is considering
+  private unconfirmedMove: CellWithPosition | null;
 
   constructor() {
     super();
@@ -13,6 +15,7 @@ class GlobalBoard extends Board {
 
     // Shallow copy
     this.activeBoards = <LocalBoard[]> [...this.cells];
+    this.unconfirmedMove = null;
   }
 
   getLocalBoards(): LocalBoard[] {
@@ -48,6 +51,18 @@ class GlobalBoard extends Board {
 
   getActiveBoardsIndices(): number[] {
     return this.activeBoards.map(board => board.getIndex());
+  }
+
+  getUnconfirmedMove(): CellWithPosition | null {
+    return this.unconfirmedMove;
+  }
+
+  setUnconfirmedMove(cellWithPosition: CellWithPosition): void {
+    this.unconfirmedMove = cellWithPosition;
+  }
+
+  resetUnconfirmedMove(): void {
+    this.unconfirmedMove = null;
   }
 
   updateActiveBoards(index: number): void {
