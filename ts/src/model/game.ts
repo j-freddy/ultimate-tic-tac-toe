@@ -31,7 +31,7 @@ class Game {
     return this.currentPlayer;
   }
 
-  private ended(): boolean {
+  ended(): boolean {
     return this.board.getStatus() !== BoardStatus.InProgress;
   }
 

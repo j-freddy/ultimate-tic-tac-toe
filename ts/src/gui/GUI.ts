@@ -57,8 +57,9 @@ class GUI {
     let cellWidth = boardWidth / board.NUM_COLS;
     let cellHeight = boardHeight / board.NUM_ROWS;
     
-    // Highlight board if active
-    if (this.game.getBoard().getActiveBoards().includes(board)) {
+    // Highlight board if active, and game has not ended
+    if (!this.game.ended() &&
+        this.game.getBoard().getActiveBoards().includes(board)) {
       this.fillRect(xOffset, yOffset, boardWidth, boardHeight, "#ffff00");
     }
 
@@ -196,6 +197,10 @@ class GUI {
 
   private startObservables() {
     canvas.addEventListener("mousemove", e => {
+      if (this.game.ended()) {
+        return;
+      }
+
       // Ignore user commands if current player is not a human
       if (this.game.getCurrentPlayer().isBot()) {
         return;
@@ -218,6 +223,10 @@ class GUI {
     });
 
     canvas.addEventListener("mousedown", e => {
+      if (this.game.ended()) {
+        return;
+      }
+
       // Ignore user commands if current player is not a human
       if (this.game.getCurrentPlayer().isBot()) {
         return;
