@@ -3,8 +3,14 @@ const ctx = <CanvasRenderingContext2D> canvas.getContext("2d");
 
 window.addEventListener("load", () => {
   console.log("Hello world!");
-
-  const game = new Game();
-  const gui = GUI.getInstance(game);
-  gui.refresh();
+  createNewGame();
 });
+
+function createNewGame() {
+  GUI.getInstance(new Game()).refresh();
+}
+
+function switchContextToNewGame() {
+  GUI.getInstance().switchContext(new Game());
+  GUI.getInstance().refresh();
+}

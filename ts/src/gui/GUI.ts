@@ -2,19 +2,27 @@
 class GUI {
   private static instance: GUI;
 
-  private readonly game: Game;
+  private game: Game;
 
   private constructor(game: Game) {
     this.game = game;
     this.startObservables();
   }
 
-  static getInstance(game: Game): GUI {
+  static getInstance(game?: Game): GUI {
     if (!GUI.instance) {
-      GUI.instance = new GUI(game);
+      if (game) {
+        GUI.instance = new GUI(game);
+      } else {
+        throw new Error("Instance does not exist and game is unspecified.");
+      }
     }
 
     return GUI.instance;
+  }
+
+  switchContext(game: Game) {
+    this.game = game;
   }
 
   private getBoardWidth(): number {
