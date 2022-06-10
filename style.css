@@ -1,4 +1,22 @@
-#main-canvas {
+.wrapper {
+  width: 800px;
+  margin-bottom: 128px;
+}
+
+.wrapper #main-canvas {
   border: 1px solid #ced4da;
   border-radius: 4px;
+}
+
+.wrapper #config {
+  width: 480px;
+  margin: auto;
+}
+
+.wrapper #config .form-label {
+  font-weight: bold;
+}
+
+.wrapper #config .btn-group label {
+  width: 88px;
 }
