@@ -68,20 +68,21 @@ class GUI {
     // Highlight board if active, and game has not ended
     if (!this.game.ended() &&
         this.game.getBoard().getActiveBoards().includes(board)) {
-      this.fillRect(xOffset, yOffset, boardWidth, boardHeight, "#ffff00");
+      this.fillRect(xOffset, yOffset, boardWidth, boardHeight,
+                    GUIData.activeColour);
     }
 
     // Draw frame
     for (let i = 1; i < board.NUM_ROWS; i++) {
       let y = i * boardHeight / board.NUM_ROWS;
       this.drawLine(xOffset, y + yOffset, boardWidth + xOffset, y + yOffset,
-                   "#777");
+                    GUIData.localFrameColour, GUIData.localFrameThickness);
     }
 
     for (let i = 1; i < board.NUM_COLS; i++) {
       let x = i * boardWidth / board.NUM_COLS;
       this.drawLine(x + xOffset, yOffset, x + xOffset, boardHeight + yOffset,
-                   "#777");
+                    GUIData.localFrameColour, GUIData.localFrameThickness);
     }
 
     // Draw Os and Xs
@@ -123,12 +124,14 @@ class GUI {
     // Draw frame
     for (let i = 1; i < board.NUM_ROWS; i++) {
       let y = i * this.getBoardHeight() / board.NUM_ROWS;
-      this.drawLine(0, y, this.getBoardWidth(), y, "#000", 3);
+      this.drawLine(0, y, this.getBoardWidth(), y, GUIData.globalFrameColour,
+                    GUIData.globalFrameThickness);
     }
 
     for (let i = 1; i < board.NUM_COLS; i++) {
       let x = i * this.getBoardWidth() / board.NUM_COLS;
-      this.drawLine(x, 0, x, this.getBoardHeight(), "#000", 3);
+      this.drawLine(x, 0, x, this.getBoardHeight(), GUIData.globalFrameColour,
+                    GUIData.globalFrameThickness);
     }
 
     // Draw Os and Xs
