@@ -11,8 +11,8 @@ abstract class Board {
   protected cells: Cell[] = [];
   protected status: BoardStatus;
 
-  constructor() {
-    this.status = BoardStatus.InProgress;
+  constructor(status: BoardStatus = BoardStatus.InProgress) {
+    this.status = status;
   }
 
   getStatus(): BoardStatus {

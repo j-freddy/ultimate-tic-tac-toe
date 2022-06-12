@@ -7,8 +7,8 @@ class Game {
 
   constructor() {
     this.board = new GlobalBoard();
-    this.playerNought = new PlayerHuman(MarkType.O);
     this.playerCross = new PlayerHuman(MarkType.X);
+    this.playerNought = new PlayerAIRandom(MarkType.O);
 
     this.currentPlayer = this.playerCross;
   }
@@ -35,7 +35,7 @@ class Game {
     return this.board.getStatus() !== BoardStatus.InProgress;
   }
 
-  makeMove(globalIndex: number, localIndex: number): boolean {
+  private makeMove(globalIndex: number, localIndex: number): boolean {
     try {
       if (this.ended()) {
         throw new Error("Trying to make a move when game has ended.");
@@ -44,17 +44,34 @@ class Game {
       this.board.setCellValue(this.currentPlayer.getMarkType(), globalIndex,
                               localIndex);
 
-      if (this.ended()) {
-        console.log("Game ended!");
-      } else {
-        this.switchPlayer();
-        this.board.updateActiveBoards(localIndex);
-      }
-
       return true;
     } catch (e) {
       console.log(e);
       return false;
+    }
+  }
+
+  performTurn(globalIndex: number, localIndex: number): void {
+    let valid = this.makeMove(globalIndex, localIndex);
+
+    if (!valid) {
+      return;
+    }
+
+    if (this.ended()) {
+      console.log("Game ended!");
+    } else {
+      this.switchPlayer();
+      this.board.updateActiveBoards(localIndex);
+    }
+
+    // Launch AI if it needs to make the next move
+    if (this.currentPlayer.isBot()) {
+      this.currentPlayer.chooseMove(this.board.copy())
+        .then(move => {
+          this.performTurn(move.globalIndex, move.localIndex);
+        })
+        .catch(err => console.log(err));
     }
   }
 }

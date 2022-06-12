@@ -4,17 +4,25 @@ class GlobalBoard extends Board {
   // Potential move a player is considering
   private unconfirmedMove: CellWithPosition | null;
 
-  constructor() {
+  constructor(cells: Cell[] = [], activeBoards: LocalBoard[] = []) {
     super();
 
-    this.cells = [];
-
-    for (let i = 0; i < this.NUM_CELLS; i++) {
-      this.cells.push(new LocalBoard(i));
+    this.cells = cells;
+    // TODO Refactor
+    if (this.cells.length === 0) {
+      for (let i = 0; i < this.NUM_CELLS; i++) {
+        this.cells.push(new LocalBoard(i));
+      }
     }
 
-    // Shallow copy
-    this.activeBoards = <LocalBoard[]> [...this.cells];
+    this.activeBoards = activeBoards;
+    // TODO Refactor
+    if (activeBoards.length === 0) {
+      // Default
+      // Shallow copy
+      this.activeBoards = <LocalBoard[]> [...this.cells];
+    }
+
     this.unconfirmedMove = null;
   }
 
@@ -33,7 +41,8 @@ class GlobalBoard extends Board {
   setCellValue(value: MarkType, globalIndex: number,
                localIndex: number): void {
     if (!this.getActiveBoardsIndices().includes(globalIndex)) {
-      throw new Error("Trying to set cell on non-active board.");
+      throw new Error(`Trying to set cell on non-active board at
+                      (${globalIndex}, ${localIndex})`);
     }
     
     this.getLocalBoardByIndex(globalIndex).setCellValue(value, localIndex);
@@ -73,5 +82,19 @@ class GlobalBoard extends Board {
     } else {
       this.activeBoards = this.getBoardsInProgress();
     }
+  }
+  
+  copy(): GlobalBoard {
+    let boardsCopy = (<LocalBoard[]> this.cells).map(c => c.copy());
+    let activeIndices = this.getActiveBoardsIndices();
+    let activeBoards: LocalBoard[] = [];
+
+    for (let board of boardsCopy) {
+      if (activeIndices.includes(board.getIndex())) {
+        activeBoards.push(board);
+      }
+    }
+
+    return new GlobalBoard(boardsCopy, activeBoards);
   }
 }

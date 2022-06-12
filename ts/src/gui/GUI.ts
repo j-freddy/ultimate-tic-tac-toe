@@ -247,7 +247,7 @@ class GUI {
       let pos = this.getPositionOnBoard(e.clientX - rect.left,
                                         e.clientY - rect.top);
 
-      this.game.makeMove(pos.globalIndex, pos.localIndex);
+      this.game.performTurn(pos.globalIndex, pos.localIndex);
 
       // Update
       this.refresh();

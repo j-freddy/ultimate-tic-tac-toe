@@ -12,4 +12,8 @@ class PlayerHuman implements Player {
   isBot(): boolean {
     return false;
   }
+
+  chooseMove(boardCopy: GlobalBoard): Promise<BoardPosition> {
+    throw new Error("chooseMove called on human player.");
+  }
 }

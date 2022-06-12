@@ -1,8 +1,8 @@
 class LocalCell implements Cell {
   private value: MarkType | null;
 
-  constructor() {
-    this.value = null;
+  constructor(value: MarkType | null = null) {
+    this.value = value;
   }
   
   getValue(): MarkType | null {
@@ -10,5 +10,9 @@ class LocalCell implements Cell {
   }
   setValue(value: MarkType): void {
     this.value = value;
+  }
+
+  copy(): LocalCell {
+    return new LocalCell(this.value);
   }
 }
