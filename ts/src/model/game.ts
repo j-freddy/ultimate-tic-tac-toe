@@ -5,12 +5,15 @@ class Game {
 
   private currentPlayer: Player;
 
-  constructor() {
+  constructor(playerCross: Player = new PlayerHuman(MarkType.X),
+              playerNought: Player = new PlayerHuman(MarkType.O)) {
     this.board = new GlobalBoard();
-    this.playerCross = new PlayerHuman(MarkType.X);
-    this.playerNought = new PlayerAIRandom(MarkType.O);
-
+    this.playerCross = playerCross;
+    this.playerNought = playerNought;
+    
     this.currentPlayer = this.playerCross;
+
+    this.launchAIIfNeeded();
   }
 
   getBoard(): GlobalBoard {
@@ -65,7 +68,17 @@ class Game {
       this.board.updateActiveBoards(localIndex);
     }
 
-    // Launch AI if it needs to make the next move
+    // Refresh UI when AI makes move
+    if (this.currentPlayer.isBot()) {
+      // TODO Decouple canvas from model
+      canvas.dispatchEvent(new Event("refresh"));
+    }
+
+    this.launchAIIfNeeded();
+  }
+
+  // Launch AI if it needs to make the next move
+  private launchAIIfNeeded(): void {
     if (this.currentPlayer.isBot()) {
       this.currentPlayer.chooseMove(this.board.copy())
         .then(move => {

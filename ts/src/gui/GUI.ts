@@ -252,5 +252,29 @@ class GUI {
       // Update
       this.refresh();
     });
+
+    // Force refresh (useful for AIs)
+    canvas.addEventListener("refresh", _ => {
+      this.refresh();
+    });
+
+    // Config
+    const configButton = <HTMLElement> document.getElementById("config-button");
+
+    configButton.addEventListener("click", _ => {
+      let checkedX = <HTMLElement> document.querySelector(
+        "input[name='radio-player-x']:checked");
+      let checkedO = <HTMLElement> document.querySelector(
+        "input[name='radio-player-o']:checked");
+
+      let playerCross: Player = new PlayerHuman(MarkType.X);
+      let playerNought: Player = new PlayerHuman(MarkType.O);
+
+      // TODO Write a function for this and pass in MarkType
+      if (checkedX.id.includes("ai")) playerCross = new PlayerAIRandom(MarkType.X);
+      if (checkedO.id.includes("ai")) playerNought = new PlayerAIRandom(MarkType.O);
+
+      switchContextToNewGame(playerCross, playerNought);
+    });
   }
 }
