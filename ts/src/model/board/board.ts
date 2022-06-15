@@ -58,7 +58,6 @@ abstract class Board {
     return this.cells[index].getValue();
   }
 
-  // TODO Refactor to use Player type with player.getValue()
   protected checkWin(playerValue: MarkType): boolean {
     for (let pattern of this.WIN_PATTERNS) {
       if (this.getCellValueByIndex(pattern[0]) === playerValue &&
