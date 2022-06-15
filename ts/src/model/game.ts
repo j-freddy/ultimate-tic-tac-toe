@@ -24,6 +24,12 @@ class Game {
     return this.currentPlayer;
   }
 
+  setDeprecated(): void {
+    // Notify AIs that they are deprecated
+    this.playerCross.setDeprecated();
+    this.playerNought.setDeprecated();
+  }
+
   private switchPlayer(): Player {
     if (this.currentPlayer === this.playerNought) {
       this.currentPlayer = this.playerCross;

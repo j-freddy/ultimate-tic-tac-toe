@@ -13,6 +13,10 @@ class PlayerHuman implements Player {
     return false;
   }
 
+  setDeprecated(): void {
+    // Do nothing
+  }
+
   chooseMove(boardCopy: GlobalBoard): Promise<BoardPosition> {
     throw new Error("chooseMove called on human player.");
   }

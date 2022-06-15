@@ -21,6 +21,10 @@ class GUI {
     return GUI.instance;
   }
 
+  public getGame(): Game {
+    return this.game;
+  }
+
   switchContext(game: Game) {
     this.game = game;
   }

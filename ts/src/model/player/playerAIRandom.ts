@@ -1,6 +1,7 @@
 class PlayerAIRandom implements Player {
   private readonly markType: MarkType;
   private optimalMove: BoardPosition;
+  private deprecated: boolean;
 
   constructor(markType: MarkType) {
     this.markType = markType;
@@ -9,6 +10,7 @@ class PlayerAIRandom implements Player {
       globalIndex: 0,
       localIndex: 0
     }
+    this.deprecated = false;
   }
 
   getMarkType(): MarkType {
@@ -41,6 +43,10 @@ class PlayerAIRandom implements Player {
     return validMoves;
   }
 
+  setDeprecated(): void {
+    this.deprecated = true;
+  }
+
   chooseMove(boardCopy: GlobalBoard): Promise<BoardPosition> {
     let validMoves = this.getValidMoves(boardCopy);
     this.optimalMove = validMoves[Math.floor(Math.random()*validMoves.length)];
@@ -48,7 +54,11 @@ class PlayerAIRandom implements Player {
     return new Promise((resolve, reject) => {
       // TODO Currently set AI think time to 500 seconds
       setTimeout(() => {
-        resolve(this.optimalMove);
+        if (this.deprecated) {
+          reject();
+        } else {
+          resolve(this.optimalMove);
+        }
       }, 500);
     });
   }
