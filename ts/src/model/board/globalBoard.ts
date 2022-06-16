@@ -10,7 +10,7 @@ class GlobalBoard extends Board {
     this.cells = cells;
     // TODO Refactor
     if (this.cells.length === 0) {
-      for (let i = 0; i < this.NUM_CELLS; i++) {
+      for (let i = 0; i < Board.NUM_CELLS; i++) {
         this.cells.push(new LocalBoard(i));
       }
     }
@@ -31,7 +31,7 @@ class GlobalBoard extends Board {
   }
 
   getLocalBoard(row: number, col: number): LocalBoard {
-    return <LocalBoard> this.cells[row * this.NUM_COLS + col];
+    return <LocalBoard> this.cells[row * Board.NUM_COLS + col];
   }
 
   getLocalBoardByIndex(index: number): LocalBoard {

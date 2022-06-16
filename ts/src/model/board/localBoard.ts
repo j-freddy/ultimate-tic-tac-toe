@@ -9,7 +9,7 @@ class LocalBoard extends Board implements Cell {
     // TODO Refactor (make constructor call static method after refactoring
     // Board.ROWS to be static)
     if (this.cells.length === 0) {
-      for (let i = 0; i < this.NUM_CELLS; i++) {
+      for (let i = 0; i < Board.NUM_CELLS; i++) {
         this.cells.push(new LocalCell());
       }
     }

@@ -38,11 +38,11 @@ class GUI {
   }
 
   private getLocalBoardWidth(): number {
-    return this.getBoardWidth() / this.game.getBoard().NUM_COLS;
+    return this.getBoardWidth() / Board.NUM_COLS;
   }
 
   private getLocalBoardHeight(): number {
-    return this.getBoardHeight() / this.game.getBoard().NUM_ROWS;
+    return this.getBoardHeight() / Board.NUM_ROWS;
   }
   
   private drawLine(x1: number, y1: number, x2: number, y2: number,
@@ -66,8 +66,8 @@ class GUI {
                  boardWidth: number, boardHeight: number) {
     // TODO Magic numbers
     // TODO Repetition
-    let cellWidth = boardWidth / board.NUM_COLS;
-    let cellHeight = boardHeight / board.NUM_ROWS;
+    let cellWidth = boardWidth / Board.NUM_COLS;
+    let cellHeight = boardHeight / Board.NUM_ROWS;
     
     // Highlight board if active, and game has not ended
     if (!this.game.ended() &&
@@ -77,21 +77,21 @@ class GUI {
     }
 
     // Draw frame
-    for (let i = 1; i < board.NUM_ROWS; i++) {
-      let y = i * boardHeight / board.NUM_ROWS;
+    for (let i = 1; i < Board.NUM_ROWS; i++) {
+      let y = i * boardHeight / Board.NUM_ROWS;
       this.drawLine(xOffset, y + yOffset, boardWidth + xOffset, y + yOffset,
                     GUIData.localFrameColour, GUIData.localFrameThickness);
     }
 
-    for (let i = 1; i < board.NUM_COLS; i++) {
-      let x = i * boardWidth / board.NUM_COLS;
+    for (let i = 1; i < Board.NUM_COLS; i++) {
+      let x = i * boardWidth / Board.NUM_COLS;
       this.drawLine(x + xOffset, yOffset, x + xOffset, boardHeight + yOffset,
                     GUIData.localFrameColour, GUIData.localFrameThickness);
     }
 
     // Draw Os and Xs
-    for (let i = 0; i < board.NUM_ROWS; i++) {
-      for (let j= 0; j < board.NUM_COLS; j++) {
+    for (let i = 0; i < Board.NUM_ROWS; i++) {
+      for (let j= 0; j < Board.NUM_COLS; j++) {
         let cellValue = board.getCellValue(i, j);
 
         // Move to next iteration if cell is empty
@@ -113,12 +113,12 @@ class GUI {
     let localBoardWidth = this.getLocalBoardWidth();
     let localBoardHeight = this.getLocalBoardHeight();
 
-    let cellWidth = localBoardWidth / board.NUM_COLS;
-    let cellHeight = localBoardHeight / board.NUM_ROWS;
+    let cellWidth = localBoardWidth / Board.NUM_COLS;
+    let cellHeight = localBoardHeight / Board.NUM_ROWS;
 
     // Draw local boards
-    for (let i = 0; i < board.NUM_ROWS; i++) {
-      for (let j = 0; j < board.NUM_COLS; j++) {
+    for (let i = 0; i < Board.NUM_ROWS; i++) {
+      for (let j = 0; j < Board.NUM_COLS; j++) {
         this.drawLocalBoard(board.getLocalBoard(i, j), localBoardWidth * j,
                             localBoardHeight * i, localBoardWidth, 
                             localBoardHeight);
@@ -126,21 +126,21 @@ class GUI {
     }
 
     // Draw frame
-    for (let i = 1; i < board.NUM_ROWS; i++) {
-      let y = i * this.getBoardHeight() / board.NUM_ROWS;
+    for (let i = 1; i < Board.NUM_ROWS; i++) {
+      let y = i * this.getBoardHeight() / Board.NUM_ROWS;
       this.drawLine(0, y, this.getBoardWidth(), y, GUIData.globalFrameColour,
                     GUIData.globalFrameThickness);
     }
 
-    for (let i = 1; i < board.NUM_COLS; i++) {
-      let x = i * this.getBoardWidth() / board.NUM_COLS;
+    for (let i = 1; i < Board.NUM_COLS; i++) {
+      let x = i * this.getBoardWidth() / Board.NUM_COLS;
       this.drawLine(x, 0, x, this.getBoardHeight(), GUIData.globalFrameColour,
                     GUIData.globalFrameThickness);
     }
 
     // Draw Os and Xs
-    for (let i = 0; i < board.NUM_ROWS; i++) {
-      for (let j= 0; j < board.NUM_COLS; j++) {
+    for (let i = 0; i < Board.NUM_ROWS; i++) {
+      for (let j= 0; j < Board.NUM_COLS; j++) {
         let cellValue = board.getCellValue(i, j);
 
         // Move to next iteration if cell is empty
@@ -163,10 +163,10 @@ class GUI {
       let cellValue = unconfirmedMove.cell.getValue();
       let image = cellValue === MarkType.O ? img.o : img.x;
 
-      let outerRow = Math.floor(unconfirmedMove.globalIndex / board.NUM_COLS);
-      let outerCol = unconfirmedMove.globalIndex % board.NUM_COLS;
-      let innerRow = Math.floor(unconfirmedMove.localIndex / board.NUM_COLS);
-      let innerCol = unconfirmedMove.localIndex % board.NUM_COLS;
+      let outerRow = Math.floor(unconfirmedMove.globalIndex / Board.NUM_COLS);
+      let outerCol = unconfirmedMove.globalIndex % Board.NUM_COLS;
+      let innerRow = Math.floor(unconfirmedMove.localIndex / Board.NUM_COLS);
+      let innerCol = unconfirmedMove.localIndex % Board.NUM_COLS;
 
       ctx.save();
       ctx.globalAlpha = 0.4;
@@ -192,7 +192,7 @@ class GUI {
     let row = Math.floor(y / localBoardHeight);
     let col = Math.floor(x / localBoardWidth);
 
-    let globalIndex = row * board.NUM_COLS + col;
+    let globalIndex = row * Board.NUM_COLS + col;
 
     // TODO Magic numbers
     // Assume all local boards have same number of rows / columns

@@ -1,8 +1,8 @@
 abstract class Board {
-  public readonly NUM_ROWS = 3;
-  public readonly NUM_COLS = 3;
-  public readonly NUM_CELLS = 9;
-  protected readonly WIN_PATTERNS = [
+  public static NUM_ROWS = 3;
+  public static NUM_COLS = 3;
+  public static NUM_CELLS = 9;
+  public static WIN_PATTERNS = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
@@ -50,7 +50,7 @@ abstract class Board {
   }
 
   getCellValue(row: number, col: number): MarkType | null {
-    return this.cells[row * this.NUM_COLS + col].getValue();
+    return this.cells[row * Board.NUM_COLS + col].getValue();
   }
 
 
@@ -59,7 +59,7 @@ abstract class Board {
   }
 
   protected checkWin(playerValue: MarkType): boolean {
-    for (let pattern of this.WIN_PATTERNS) {
+    for (let pattern of Board.WIN_PATTERNS) {
       if (this.getCellValueByIndex(pattern[0]) === playerValue &&
           this.getCellValueByIndex(pattern[1]) === playerValue &&
           this.getCellValueByIndex(pattern[2]) === playerValue) {
@@ -84,8 +84,8 @@ abstract class Board {
     let i = 0;
     let str = "";
 
-    for (let x = 0; x < this.NUM_COLS; x++) {
-      for (let y = 0; y < this.NUM_ROWS; y++) {
+    for (let x = 0; x < Board.NUM_COLS; x++) {
+      for (let y = 0; y < Board.NUM_ROWS; y++) {
         let value = this.cells[i].getValue()?.toString();
 
         if (!value) {
