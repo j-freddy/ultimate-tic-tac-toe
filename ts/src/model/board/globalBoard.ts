@@ -4,26 +4,22 @@ class GlobalBoard extends Board {
   // Potential move a player is considering
   private unconfirmedMove: CellWithPosition | null;
 
-  constructor(cells: Cell[] = [], activeBoards: LocalBoard[] = []) {
+  constructor(cells: Cell[] = GlobalBoard.createEmptyBoards(),
+              activeBoards: LocalBoard[] = <LocalBoard[]> [...cells]) {
     super();
-
     this.cells = cells;
-    // TODO Refactor
-    if (this.cells.length === 0) {
-      for (let i = 0; i < Board.NUM_CELLS; i++) {
-        this.cells.push(new LocalBoard(i));
-      }
-    }
-
     this.activeBoards = activeBoards;
-    // TODO Refactor
-    if (activeBoards.length === 0) {
-      // Default
-      // Shallow copy
-      this.activeBoards = <LocalBoard[]> [...this.cells];
+    this.unconfirmedMove = null;
+  }
+
+  static createEmptyBoards(): LocalBoard[] {
+    let cells = [];
+
+    for (let i = 0; i < Board.NUM_CELLS; i++) {
+      cells.push(new LocalBoard(i));
     }
 
-    this.unconfirmedMove = null;
+    return cells;
   }
 
   getLocalBoards(): LocalBoard[] {

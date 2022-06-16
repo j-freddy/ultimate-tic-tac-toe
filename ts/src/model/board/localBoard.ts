@@ -1,18 +1,21 @@
 class LocalBoard extends Board implements Cell {
   private readonly index: number;
 
-  constructor(index: number, cells: Cell[] = []) {
+  constructor(index: number, cells: Cell[] = LocalBoard.createEmptyCells()) {
     super();
 
     this.index = index;
     this.cells = cells;
-    // TODO Refactor (make constructor call static method after refactoring
-    // Board.ROWS to be static)
-    if (this.cells.length === 0) {
-      for (let i = 0; i < Board.NUM_CELLS; i++) {
-        this.cells.push(new LocalCell());
-      }
+  }
+
+  static createEmptyCells(): LocalCell[] {
+    let cells = [];
+
+    for (let i = 0; i < Board.NUM_CELLS; i++) {
+      cells.push(new LocalCell());
     }
+
+    return cells;
   }
 
   getIndex(): number {
