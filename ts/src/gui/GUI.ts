@@ -44,6 +44,14 @@ class GUI {
   private getLocalBoardHeight(): number {
     return this.getBoardHeight() / Board.NUM_ROWS;
   }
+
+  private getCellWidth(): number {
+    return this.getLocalBoardWidth() / Board.NUM_COLS;
+  }
+
+  private getCellHeight(): number {
+    return this.getLocalBoardHeight() / Board.NUM_ROWS;
+  }
   
   private drawLine(x1: number, y1: number, x2: number, y2: number,
                           colour = "#000", width = 1) {
@@ -64,11 +72,6 @@ class GUI {
 
   drawLocalBoard(board: LocalBoard, xOffset: number, yOffset: number,
                  boardWidth: number, boardHeight: number) {
-    // TODO Magic numbers
-    // TODO Repetition
-    let cellWidth = boardWidth / Board.NUM_COLS;
-    let cellHeight = boardHeight / Board.NUM_ROWS;
-    
     // Highlight board if active, and game has not ended
     if (!this.game.ended() &&
         this.game.getBoard().getActiveBoards().includes(board)) {
@@ -76,6 +79,7 @@ class GUI {
                     GUIData.activeColour);
     }
 
+    // TODO Repetition
     // Draw frame
     for (let i = 1; i < Board.NUM_ROWS; i++) {
       let y = i * boardHeight / Board.NUM_ROWS;
@@ -101,8 +105,9 @@ class GUI {
 
         let image = cellValue === MarkType.O ? img.o : img.x;
         
-        ctx.drawImage(image, xOffset + cellWidth * j, yOffset + cellHeight * i,
-                      cellWidth, cellHeight)
+        ctx.drawImage(image, xOffset + this.getCellWidth() * j,
+                      yOffset + this.getCellHeight() * i,
+                      this.getCellWidth(), this.getCellHeight());
       }
     }
   }
@@ -110,18 +115,14 @@ class GUI {
   private drawGlobalBoard() {
     let board = this.game.getBoard();
 
-    let localBoardWidth = this.getLocalBoardWidth();
-    let localBoardHeight = this.getLocalBoardHeight();
-
-    let cellWidth = localBoardWidth / Board.NUM_COLS;
-    let cellHeight = localBoardHeight / Board.NUM_ROWS;
-
     // Draw local boards
     for (let i = 0; i < Board.NUM_ROWS; i++) {
       for (let j = 0; j < Board.NUM_COLS; j++) {
-        this.drawLocalBoard(board.getLocalBoard(i, j), localBoardWidth * j,
-                            localBoardHeight * i, localBoardWidth, 
-                            localBoardHeight);
+        this.drawLocalBoard(board.getLocalBoard(i, j),
+                            this.getLocalBoardWidth() * j,
+                            this.getLocalBoardHeight() * i,
+                            this.getLocalBoardWidth(), 
+                            this.getLocalBoardHeight());
       }
     }
 
@@ -150,8 +151,9 @@ class GUI {
 
         let image = cellValue === MarkType.O ? img.o : img.x;
         
-        ctx.drawImage(image, localBoardWidth * j, localBoardHeight * i,
-                      localBoardWidth, localBoardHeight);
+        ctx.drawImage(image, this.getLocalBoardWidth() * j,
+                      this.getLocalBoardHeight() * i,
+                      this.getLocalBoardWidth(), this.getLocalBoardHeight());
       }
     }
 
@@ -171,9 +173,9 @@ class GUI {
       ctx.save();
       ctx.globalAlpha = 0.4;
       ctx.drawImage(image,
-                    localBoardWidth * outerCol + cellWidth * innerCol,
-                    localBoardHeight * outerRow + cellHeight * innerRow,
-                    cellWidth, cellHeight);
+                    this.getLocalBoardWidth() * outerCol + this.getCellWidth() * innerCol,
+                    this.getLocalBoardHeight() * outerRow + this.getCellHeight() * innerRow,
+                    this.getCellWidth(), this.getCellHeight());
       ctx.restore();
     }
   }
@@ -184,8 +186,6 @@ class GUI {
   }
 
   private getPositionOnBoard(x: number, y: number): BoardPosition {
-    let board = this.game.getBoard();
-
     let localBoardWidth = this.getLocalBoardHeight();
     let localBoardHeight = this.getLocalBoardWidth();
 
