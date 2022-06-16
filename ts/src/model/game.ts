@@ -67,19 +67,19 @@ class Game {
       return;
     }
 
-    if (this.ended()) {
-      console.log("Game ended!");
-    } else {
-      this.switchPlayer();
-      this.board.updateActiveBoards(localIndex);
-    }
-
     // Refresh UI when AI makes move
     if (this.currentPlayer.isBot()) {
       // TODO Decouple canvas from model
       canvas.dispatchEvent(new Event("refresh"));
     }
 
+    if (this.ended()) {
+      console.log("Game ended!");
+      return;
+    }
+
+    this.switchPlayer();
+    this.board.updateActiveBoards(localIndex);
     this.launchAIIfNeeded();
   }
 
