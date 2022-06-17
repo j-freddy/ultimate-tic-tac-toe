@@ -38,8 +38,8 @@ class GlobalBoard extends Board {
   setCellValue(value: MarkType, globalIndex: number,
                localIndex: number): void {
     if (!this.getActiveBoardsIndices().includes(globalIndex)) {
-      throw new Error(`Trying to set cell on non-active board at
-                      (${globalIndex}, ${localIndex})`);
+      throw new Error(`Trying to set cell on non-active board at ` +
+                      `(${globalIndex}, ${localIndex}).`);
     }
     
     this.getLocalBoardByIndex(globalIndex).setCellValue(value, localIndex);
@@ -71,6 +71,10 @@ class GlobalBoard extends Board {
     this.unconfirmedMove = null;
   }
 
+  protected checkFull(): boolean {
+    return this.getBoardsInProgress().length === 0;
+  }
+
   updateActiveBoards(index: number): void {
     let nextBoard = this.getLocalBoardByIndex(index);
 
@@ -79,6 +83,34 @@ class GlobalBoard extends Board {
     } else {
       this.activeBoards = this.getBoardsInProgress();
     }
+  }
+
+  // TODO Duplicate
+  // This uses a different checkFull function
+  updateAndGetStatus(): BoardStatus {
+    // Do not update status if board is not in progress
+    if (this.status !== BoardStatus.InProgress) {
+      console.warn("Attempt to update board status when board is finished.");
+      return this.status;
+    }
+
+    if (this.checkWin(MarkType.O)) {
+      this.status = BoardStatus.NoughtWin;
+      return this.status;
+    }
+
+    if (this.checkWin(MarkType.X)) {
+      this.status = BoardStatus.CrossWin;
+      return this.status;
+    }
+
+    if (this.checkFull()) {
+      this.status = BoardStatus.Draw;
+      return this.status;
+    }
+
+    this.status = BoardStatus.InProgress;
+    return this.status;
   }
   
   copy(): GlobalBoard {

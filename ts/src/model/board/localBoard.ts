@@ -25,7 +25,8 @@ class LocalBoard extends Board implements Cell {
 
   setCellValue(value: MarkType, index: number): void {
     if (this.status !== BoardStatus.InProgress) {
-      throw new Error("Trying to set cell of finished board.");
+      throw new Error(`Trying to set cell of finished board at ` +
+                      `(${this.index}, ${index}).`);
     }
 
     // Cell already has a value

@@ -35,7 +35,7 @@ abstract class PlayerAI implements Player {
     this.calculateOptimalMove(boardCopy);
 
     return new Promise((resolve, reject) => {
-      // TODO Currently set AI think time to 500 seconds
+      // TODO Currently set AI think time to 500 milliseconds
       setTimeout(() => {
         if (this.deprecated) {
           reject();
