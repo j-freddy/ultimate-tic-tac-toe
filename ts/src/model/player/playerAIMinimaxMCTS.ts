@@ -8,6 +8,17 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
            BoardStatus.NoughtWin : BoardStatus.CrossWin;
   }
 
+  private getOtherMarkType(markType: MarkType) {
+    return markType === MarkType.O ? MarkType.X : MarkType.O;
+  }
+
+  // Get all valid moves that do not lose immediately
+  private getValidMovesThatDoNotLose(board: GlobalBoard,
+                                     markType: MarkType = this.markType) {
+    let moves = this.getValidMoves(board);
+    return this.filterMovesThatLoseGame(board, markType, moves);
+  }
+
   // Get all moves that wins a local board
   private getMovesThatWinsLocalBoard(board: GlobalBoard,
                                      markType: MarkType): BoardPosition[] {
@@ -48,6 +59,36 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
     return null;
   }
 
+  // Filter moves that loses game immediately
+  // Warning: Can filter the move that wins game immediately
+  // TODO Untested
+  private filterMovesThatLoseGame(board: GlobalBoard, markType: MarkType,
+                                 moves: BoardPosition[]) {
+    let filteredMoves = [];
+
+    for (let move of moves) {
+      let boardCopy = board.copy();
+
+      // Make move
+      boardCopy.setCellValue(markType, move.globalIndex, move.localIndex);
+      boardCopy.updateActiveBoards(move.localIndex);
+
+      if (boardCopy.getStatus() !== BoardStatus.InProgress) {
+        // If game ends, opponent can't win
+        filteredMoves.push(move);
+      } else {
+        // See if opponent can win immediately
+        let winningMove = this.getMoveThatWinsGame(boardCopy,
+          this.getOtherMarkType(markType));
+        if (!winningMove) {
+          filteredMoves.push(move);
+        }
+      }
+    }
+
+    return moves;
+  }
+
   private getSmartRandomMove(board: GlobalBoard,
                              markType: MarkType): BoardPosition {
     let winningMove = this.getMoveThatWinsGame(board, this.markType);
@@ -57,14 +98,17 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
     }
 
     // Otherwise, choose a move that wins a local board if it exists
-    let goodMoves = this.getMovesThatWinsLocalBoard(board, this.markType);
+    // Filter moves that lose immediately
+    let potentialMoves = this.getMovesThatWinsLocalBoard(board, this.markType);
+    let goodMoves = this.filterMovesThatLoseGame(board, markType,
+                                                 potentialMoves);
     if (goodMoves.length !== 0) {
       return goodMoves[0];
     }
 
-    let validMoves = this.getValidMoves(board);
+    let filteredMoves = this.getValidMovesThatDoNotLose(board);
     // Otherwise, choose a random move
-    return validMoves[Math.floor(Math.random()*validMoves.length)];
+    return filteredMoves[Math.floor(Math.random()*filteredMoves.length)];
   }
 
   private simulatePlayout(board: GlobalBoard,
@@ -80,8 +124,7 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
       boardCopy.updateActiveBoards(move.localIndex);
 
       // Switch player
-      currentMarkType = currentMarkType === MarkType.O ?
-                        MarkType.X : MarkType.O;
+      currentMarkType = this.getOtherMarkType(currentMarkType);
     }
 
     return boardCopy.getStatus();
@@ -91,7 +134,7 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
   // 1 -> perfect for X
   // 0 -> perfect for O
   private evaluateBoard(board: GlobalBoard, currentMarkType: MarkType): number {
-    const PLAYOUTS = 100;
+    const PLAYOUTS = 10;
     let absScore = 0;
 
     for (let i = 0; i < PLAYOUTS; i++) {
