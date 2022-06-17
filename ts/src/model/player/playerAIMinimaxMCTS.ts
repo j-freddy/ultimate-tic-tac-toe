@@ -63,7 +63,7 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
   // Warning: Can filter the move that wins game immediately
   // TODO Untested
   private filterMovesThatLoseGame(board: GlobalBoard, markType: MarkType,
-                                 moves: BoardPosition[]) {
+                                  moves: BoardPosition[]): BoardPosition[] {
     let filteredMoves = [];
 
     for (let move of moves) {
@@ -86,7 +86,7 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
       }
     }
 
-    return moves;
+    return filteredMoves;
   }
 
   private getSmartRandomMove(board: GlobalBoard,
@@ -106,9 +106,16 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
       return goodMoves[0];
     }
 
-    let filteredMoves = this.getValidMovesThatDoNotLose(board);
     // Otherwise, choose a random move
-    return filteredMoves[Math.floor(Math.random()*filteredMoves.length)];
+    let validMoves = this.getValidMoves(board);
+    let filteredMoves = this.filterMovesThatLoseGame(board, markType,
+                                                     validMoves);
+
+    if (filteredMoves.length !== 0) {
+      return filteredMoves[Math.floor(Math.random()*filteredMoves.length)];
+    }
+
+    return validMoves[Math.floor(Math.random()*filteredMoves.length)];
   }
 
   private simulatePlayout(board: GlobalBoard,
