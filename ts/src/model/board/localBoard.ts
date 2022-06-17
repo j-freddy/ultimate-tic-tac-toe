@@ -1,8 +1,9 @@
 class LocalBoard extends Board implements Cell {
   private readonly index: number;
 
-  constructor(index: number, cells: Cell[] = LocalBoard.createEmptyCells()) {
-    super();
+  constructor(index: number, cells: Cell[] = LocalBoard.createEmptyCells(),
+              status: BoardStatus = BoardStatus.InProgress) {
+    super(status);
 
     this.index = index;
     this.cells = cells;
@@ -49,6 +50,6 @@ class LocalBoard extends Board implements Cell {
 
   copy(): LocalBoard {
     let cellsCopy = (<LocalCell[]> this.cells).map(c => c.copy());
-    return new LocalBoard(this.index, cellsCopy);
+    return new LocalBoard(this.index, cellsCopy, this.status);
   }
 }

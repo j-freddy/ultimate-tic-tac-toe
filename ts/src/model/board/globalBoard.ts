@@ -5,8 +5,9 @@ class GlobalBoard extends Board {
   private unconfirmedMove: CellWithPosition | null;
 
   constructor(cells: Cell[] = GlobalBoard.createEmptyBoards(),
-              activeBoards: LocalBoard[] = <LocalBoard[]> [...cells]) {
-    super();
+              activeBoards: LocalBoard[] = <LocalBoard[]> [...cells],
+              status: BoardStatus = BoardStatus.InProgress) {
+    super(status);
     this.cells = cells;
     this.activeBoards = activeBoards;
     this.unconfirmedMove = null;
@@ -91,6 +92,6 @@ class GlobalBoard extends Board {
       }
     }
 
-    return new GlobalBoard(boardsCopy, activeBoards);
+    return new GlobalBoard(boardsCopy, activeBoards, this.status);
   }
 }

@@ -275,8 +275,10 @@ class GUI {
       let playerNought: Player = new PlayerHuman(MarkType.O);
 
       // TODO Write a function for this and pass in MarkType
-      if (checkedX.id.includes("ai")) playerCross = new PlayerAIRandom(MarkType.X);
-      if (checkedO.id.includes("ai")) playerNought = new PlayerAIRandom(MarkType.O);
+      if (checkedX.id.includes("ai"))
+        playerCross = new PlayerAIMinimaxMCTS(MarkType.X);
+      if (checkedO.id.includes("ai"))
+        playerNought = new PlayerAIMinimaxMCTS(MarkType.O);
 
       switchContextToNewGame(playerCross, playerNought);
     });

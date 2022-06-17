@@ -67,6 +67,8 @@ class Game {
       return;
     }
 
+    this.board.updateActiveBoards(localIndex);
+
     // Refresh UI when AI makes move
     if (this.currentPlayer.isBot()) {
       // TODO Decouple canvas from model
@@ -79,7 +81,6 @@ class Game {
     }
 
     this.switchPlayer();
-    this.board.updateActiveBoards(localIndex);
     this.launchAIIfNeeded();
   }
 
