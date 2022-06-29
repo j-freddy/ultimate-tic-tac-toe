@@ -1,6 +1,4 @@
-// WIP
-
-class PlayerAIMinimaxMCTS extends PlayerAI {
+class PlayerAISmartRandomFeedback extends PlayerAI {
   constructor(markType: MarkType) {
     super(markType);
   }
@@ -10,7 +8,7 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
            BoardStatus.NoughtWin : BoardStatus.CrossWin;
   }
 
-  private getOtherMarkType(markType: MarkType) {
+  private getOtherMarkType(markType: MarkType = this.markType) {
     return markType === MarkType.O ? MarkType.X : MarkType.O;
   }
 
@@ -142,11 +140,11 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
   // Evaluate position of a board by smart random playouts
   // 1 -> perfect for X
   // 0 -> perfect for O
-  private evaluateBoard(board: GlobalBoard, currentMarkType: MarkType): number {
-    const PLAYOUTS = 10;
+  private evaluateBoard(board: GlobalBoard, currentMarkType: MarkType,
+                        numPlayouts: number = 100): number {
     let absScore = 0;
 
-    for (let i = 0; i < PLAYOUTS; i++) {
+    for (let i = 0; i < numPlayouts; i++) {
       // Simulate game until it ends
       let status = this.simulatePlayout(board, currentMarkType);
 
@@ -154,14 +152,63 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
       if (status === BoardStatus.Draw)     absScore += 0.5;
     }
 
-    return absScore / PLAYOUTS;
+    return absScore / numPlayouts;
   }
 
   protected calculateOptimalMove(boardCopy: GlobalBoard): void {
-    this.optimalMove = this.getSmartRandomMove(boardCopy, this.markType);
+    let winningMove = this.getMoveThatWinsGame(boardCopy, this.markType);
+    if (winningMove) {
+      // Choose winning move if it exists
+      this.optimalMove = winningMove;
+      return;
+    }
+
+    let moves = this.getValidMovesThatDoNotLose(boardCopy);
+
+    if (moves.length === 0) {
+      // We're screwed: all moves immediately lose
+      this.optimalMove = this.getValidMoves(boardCopy)[0];
+      return;
+    }
+
+    let movesWithEval: MoveWithEvaluation[] = moves
+      .map(move => <MoveWithEvaluation> { move: move, eval: 0 });
+    // TODO Magic number
+    // Let's do 200 playouts in total per iteration
+    let numPlayouts = Math.floor(200 / moves.length);
+
+    let optimalMoveWithEval: MoveWithEvaluation = movesWithEval[0];
+
+    // Evaluate all moves and update optimal move
+    for (let moveWithEval of movesWithEval) {
+      // Make move
+      let move = moveWithEval.move;
+      let boardPrivateCopy = boardCopy.copy();
+      boardPrivateCopy.setCellValueWithMove(this.markType, move);
+      boardPrivateCopy.updateActiveBoards(move.localIndex);
+
+      // Evaluate board
+      let evaluation = this.evaluateBoard(boardPrivateCopy,
+                                          this.getOtherMarkType(),
+                                          numPlayouts);
+      moveWithEval.eval = evaluation;
+      
+      if (evaluation > optimalMoveWithEval.eval) {
+        optimalMoveWithEval = moveWithEval;
+      }
+    }
+
+    this.optimalMove = optimalMoveWithEval.move;
 
     // TODO Delete
-    let evaluation = this.evaluateBoard(boardCopy, this.markType);
-    console.log(evaluation);
+    for (let moveWithEval of movesWithEval) {
+      console.log("Move");
+      console.log(moveWithEval.move);
+      console.log("Evaluation");
+      console.log(moveWithEval.eval);
+    }
+
+    console.log(`(Smart Random) My marktype is ${this.markType}`);
+    
   }
 }

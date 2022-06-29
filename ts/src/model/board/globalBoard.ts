@@ -45,6 +45,10 @@ class GlobalBoard extends Board {
     this.getLocalBoardByIndex(globalIndex).setCellValue(value, localIndex);
     this.updateAndGetStatus();
   }
+  
+  setCellValueWithMove(value: MarkType, move: BoardPosition): void {
+    this.setCellValue(value, move.globalIndex, move.localIndex);
+  }
 
   getBoardsInProgress(): LocalBoard[] {
     return this.getLocalBoards()
