@@ -32,7 +32,8 @@ abstract class PlayerAI implements Player {
   }
 
   chooseMove(boardCopy: GlobalBoard): Promise<BoardPosition> {
-    this.calculateOptimalMove(boardCopy);
+    // Forces promise to return instantly
+    setTimeout(() => this.calculateOptimalMove(boardCopy), 0);
 
     return new Promise((resolve, reject) => {
       // TODO Currently set AI think time to 500 milliseconds

@@ -69,11 +69,10 @@ class Game {
 
     this.board.updateActiveBoards(localIndex);
 
-    // Refresh UI when AI makes move
-    if (this.currentPlayer.isBot()) {
-      // TODO Decouple canvas from model
-      canvas.dispatchEvent(new Event("refresh"));
-    }
+    // Refresh UI instantly when move is made
+    // As launchAIIfNeeded may call AI.chooseMove which takes time
+    // TODO Decouple canvas from model
+    canvas.dispatchEvent(new Event("refresh"));
 
     if (this.ended()) {
       console.log("Game ended!");
