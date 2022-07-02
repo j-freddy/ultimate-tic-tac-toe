@@ -3,7 +3,7 @@ class PlayerAIRandom extends PlayerAI {
     super(markType);
   }
 
-  protected calculateOptimalMove(boardCopy: GlobalBoard): void {
+  protected performSingleIterCalc(boardCopy: GlobalBoard): void {
     let validMoves = this.getValidMoves(boardCopy);
     this.optimalMove = validMoves[Math.floor(Math.random()*validMoves.length)];
   }

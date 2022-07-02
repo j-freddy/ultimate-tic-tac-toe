@@ -25,25 +25,37 @@ abstract class PlayerAI implements Player {
     this.deprecated = true;
   }
 
-  // This is the ONLY method a new AI has to implement
+  // This is the ONLY method that must be implemented in a new AI
   // The AI must set its chosen move in this.optimalMove within the time frame
-  protected calculateOptimalMove(boardCopy: GlobalBoard): void {
-    throw new Error("calculateOptimalMove not implemented.");
+  protected performSingleIterCalc(boardCopy: GlobalBoard): void {
+    throw new Error("performSingleIterCalc not implemented.");
+  }
+
+  private calcOptimalMove(boardCopy: GlobalBoard): ThreadId {
+    // TODO 60 frames per second
+    return setInterval(() => this.performSingleIterCalc(boardCopy), 1000 / 60);
+  }
+
+  // This is an optional method for a new AI
+  // It is used to print a summary regarding the move choice
+  protected printMoveInformation(): void {
+    return;
   }
 
   chooseMove(boardCopy: GlobalBoard): Promise<BoardPosition> {
-    // Forces promise to return instantly
-    setTimeout(() => this.calculateOptimalMove(boardCopy), 0);
+    const calcMoveThreadId = this.calcOptimalMove(boardCopy);
 
     return new Promise((resolve, reject) => {
-      // TODO Currently set AI think time to 500 milliseconds
+      // TODO Currently set AI think time to 1000 milliseconds
       setTimeout(() => {
         if (this.deprecated) {
           reject();
         } else {
+          clearInterval(calcMoveThreadId);
           resolve(this.optimalMove);
+          this.printMoveInformation();
         }
-      }, 500);
+      }, 1000);
     });
   }
 

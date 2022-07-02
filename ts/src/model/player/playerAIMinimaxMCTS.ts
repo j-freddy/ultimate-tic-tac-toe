@@ -157,7 +157,7 @@ class PlayerAIMinimaxMCTS extends PlayerAI {
     return absScore / PLAYOUTS;
   }
 
-  protected calculateOptimalMove(boardCopy: GlobalBoard): void {
+  protected performSingleIterCalc(boardCopy: GlobalBoard): void {
     this.optimalMove = this.getSmartRandomMove(boardCopy, this.markType);
 
     // TODO Delete

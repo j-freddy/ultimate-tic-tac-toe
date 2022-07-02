@@ -155,7 +155,7 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     return absScore / numPlayouts;
   }
 
-  protected calculateOptimalMove(boardCopy: GlobalBoard): void {
+  protected performSingleIterCalc(boardCopy: GlobalBoard): void {
     let winningMove = this.getMoveThatWinsGame(boardCopy, this.markType);
     if (winningMove) {
       // Choose winning move if it exists
@@ -174,8 +174,8 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     let movesWithEval: MoveWithEvaluation[] = moves
       .map(move => <MoveWithEvaluation> { move: move, eval: 0 });
     // TODO Magic number
-    // Let's do 200 playouts in total per iteration
-    let numPlayouts = Math.floor(200 / moves.length);
+    // Let's do 3 playouts in total per iteration
+    let numPlayouts = Math.floor(3 / moves.length);
 
     let optimalMoveWithEval: MoveWithEvaluation = movesWithEval[0];
 
@@ -201,14 +201,17 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     this.optimalMove = optimalMoveWithEval.move;
 
     // TODO Delete
-    for (let moveWithEval of movesWithEval) {
-      console.log("Move");
-      console.log(moveWithEval.move);
-      console.log("Evaluation");
-      console.log(moveWithEval.eval);
-    }
 
-    console.log(`(Smart Random) My marktype is ${this.markType}`);
+    // for (let moveWithEval of movesWithEval) {
+    //   console.log("Move");
+    //   console.log(moveWithEval.move);
+    //   console.log("Evaluation");
+    //   console.log(moveWithEval.eval);
+    // }
+
+    // console.log(`(Smart Random) My marktype is ${this.markType}`);
+
+    console.log("Bruh.");
     
   }
 }
