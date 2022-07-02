@@ -1,3 +1,12 @@
+/*
+  PlayerAI
+
+  To create a new AI, you need to implement 3 methods:
+  - resetForMove
+  - performSingleIterCalc
+  - printMoveInformation
+*/
+
 abstract class PlayerAI implements Player {
   protected readonly markType: MarkType;
   protected optimalMove: BoardPosition;
@@ -25,7 +34,13 @@ abstract class PlayerAI implements Player {
     this.deprecated = true;
   }
 
-  // This is the ONLY method that must be implemented in a new AI
+  // This method must be implemented in a new AI
+  // It is called before calcOptimalMove() and is used to reset the AI state
+  protected resetForMove(): void {
+    throw new Error("resetForMove not implemented.");
+  }
+
+  // This is the main method that must be implemented in a new AI
   // The AI must set its chosen move in this.optimalMove within the time frame
   protected performSingleIterCalc(boardCopy: GlobalBoard): void {
     throw new Error("performSingleIterCalc not implemented.");
@@ -43,6 +58,7 @@ abstract class PlayerAI implements Player {
   }
 
   chooseMove(boardCopy: GlobalBoard): Promise<BoardPosition> {
+    this.resetForMove();
     const calcMoveThreadId = this.calcOptimalMove(boardCopy);
 
     return new Promise((resolve, reject) => {
