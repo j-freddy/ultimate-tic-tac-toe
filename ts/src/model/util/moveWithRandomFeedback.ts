@@ -1,3 +1,8 @@
+/*
+  rawScore:
+  - 1 -> perfect for X
+  - 0 -> perfect for O
+*/
 class MoveWithRandomFeedback {
   readonly move: BoardPosition;
   private rawScore: number;

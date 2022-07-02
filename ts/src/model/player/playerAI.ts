@@ -12,6 +12,9 @@
     is chosen. It is also an opportunity for the AI to print summary statistics.
 */
 abstract class PlayerAI implements Player {
+  private readonly MAX_FPS = 60;
+  private readonly TIME_LIMIT = 2000; // Think time in milliseconds
+
   protected readonly markType: MarkType;
   protected optimalMove: BoardPosition;
   protected deprecated: boolean;
@@ -51,8 +54,8 @@ abstract class PlayerAI implements Player {
   }
 
   private startCalcMoveThread(boardCopy: GlobalBoard): ThreadId {
-    // TODO 60 frames per second
-    return setInterval(() => this.executeSingleIterCalc(boardCopy), 1000 / 60);
+    return setInterval(() => this.executeSingleIterCalc(boardCopy),
+      1000 / this.MAX_FPS);
   }
 
   chooseMove(boardCopy: GlobalBoard): Promise<BoardPosition> {
@@ -60,7 +63,6 @@ abstract class PlayerAI implements Player {
     const calcMoveThreadId = this.startCalcMoveThread(boardCopy);
 
     return new Promise((resolve, reject) => {
-      // TODO Currently set AI think time to 1000 milliseconds
       setTimeout(() => {
         if (this.deprecated) {
           reject();
@@ -69,7 +71,7 @@ abstract class PlayerAI implements Player {
           this.executeAfter(boardCopy);
           resolve(this.optimalMove);
         }
-      }, 1000);
+      }, this.TIME_LIMIT);
     });
   }
 

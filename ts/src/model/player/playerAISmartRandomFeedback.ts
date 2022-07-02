@@ -197,23 +197,32 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
       moveWithEval.update(result);
     }
 
-    // TODO Delete
-
-    // for (let moveWithEval of movesWithEval) {
-    //   console.log("Move");
-    //   console.log(moveWithEval.move);
-    //   console.log("Evaluation");
-    //   console.log(moveWithEval.eval);
-    // }
-
-    // console.log(`(Smart Random) My marktype is ${this.markType}`);
-
     console.log("Bruh.");
   }
 
   protected executeAfter(boardCopy: GlobalBoard): void {
-    this.optimalMove = this.getValidMoves(boardCopy)[0];
+    // TODO Refactor duplicate
+    if (this.markType === MarkType.X) {
+      let bestEval = -Infinity;
 
+      for (let moveWithEval of this.movesWithEval) {
+        if (moveWithEval.eval() > bestEval) {
+          bestEval = moveWithEval.eval();
+          this.optimalMove = moveWithEval.move;
+        }
+      }
+    } else {
+      let bestEval = Infinity;
+
+      for (let moveWithEval of this.movesWithEval) {
+        if (moveWithEval.eval() < bestEval) {
+          bestEval = moveWithEval.eval();
+          this.optimalMove = moveWithEval.move;
+        }
+      }
+    }
+
+    // Print information
     for (let moveWithEval of this.movesWithEval) {
       moveWithEval.print();
     }
