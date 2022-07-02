@@ -9,9 +9,4 @@ type CellWithPosition = {
   localIndex: number;
 };
 
-type MoveWithEvaluation = {
-  move: BoardPosition;
-  eval: number;
-}
-
 type ThreadId = number;

@@ -2,11 +2,15 @@
   PlayerAI
 
   To create a new AI, you need to implement 3 methods:
-  - resetForMove
-  - performSingleIterCalc
-  - printMoveInformation
+  - executeBefore (optional)
+    This is called before startCalcMoveThread(). It is used to reset and prepare
+    the AI properties.
+  - exeecuteSingleIterCalc
+    This is repeatedly called until the time limit.
+  - executeAfter (optional)
+    This is called when the time limit is reached. It is used to ensure a move
+    is chosen. It is also an opportunity for the AI to print summary statistics.
 */
-
 abstract class PlayerAI implements Player {
   protected readonly markType: MarkType;
   protected optimalMove: BoardPosition;
@@ -34,32 +38,26 @@ abstract class PlayerAI implements Player {
     this.deprecated = true;
   }
 
-  // This method must be implemented in a new AI
-  // It is called before calcOptimalMove() and is used to reset the AI state
-  protected resetForMove(): void {
-    throw new Error("resetForMove not implemented.");
+  protected executeBefore(boardCopy: GlobalBoard): void {
+
   }
 
-  // This is the main method that must be implemented in a new AI
-  // The AI must set its chosen move in this.optimalMove within the time frame
-  protected performSingleIterCalc(boardCopy: GlobalBoard): void {
-    throw new Error("performSingleIterCalc not implemented.");
+  protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
+    throw new Error("executeSingleIterCalc not implemented.");
   }
 
-  private calcOptimalMove(boardCopy: GlobalBoard): ThreadId {
+  protected executeAfter(boardCopy: GlobalBoard): void {
+
+  }
+
+  private startCalcMoveThread(boardCopy: GlobalBoard): ThreadId {
     // TODO 60 frames per second
-    return setInterval(() => this.performSingleIterCalc(boardCopy), 1000 / 60);
-  }
-
-  // This is an optional method for a new AI
-  // It is used to print a summary regarding the move choice
-  protected printMoveInformation(): void {
-    return;
+    return setInterval(() => this.executeSingleIterCalc(boardCopy), 1000 / 60);
   }
 
   chooseMove(boardCopy: GlobalBoard): Promise<BoardPosition> {
-    this.resetForMove();
-    const calcMoveThreadId = this.calcOptimalMove(boardCopy);
+    this.executeBefore(boardCopy);
+    const calcMoveThreadId = this.startCalcMoveThread(boardCopy);
 
     return new Promise((resolve, reject) => {
       // TODO Currently set AI think time to 1000 milliseconds
@@ -68,8 +66,8 @@ abstract class PlayerAI implements Player {
           reject();
         } else {
           clearInterval(calcMoveThreadId);
+          this.executeAfter(boardCopy);
           resolve(this.optimalMove);
-          this.printMoveInformation();
         }
       }, 1000);
     });

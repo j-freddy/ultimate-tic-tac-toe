@@ -1,18 +1,15 @@
 class PlayerAIRandom extends PlayerAI {
-  private moveChosen: boolean;
+  private moveChosen!: boolean;
 
   constructor(markType: MarkType) {
     super(markType);
+  }
+
+  protected executeBefore(boardCopy: GlobalBoard): void {
     this.moveChosen = false;
   }
 
-  protected resetForMove(): void {
-    this.moveChosen = false;
-  }
-
-  protected performSingleIterCalc(boardCopy: GlobalBoard): void {
-    console.log("Perform iter.");
-
+  protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
     if (this.moveChosen) {
       return;
     }
@@ -20,6 +17,5 @@ class PlayerAIRandom extends PlayerAI {
     let validMoves = this.getValidMoves(boardCopy);
     this.optimalMove = validMoves[Math.floor(Math.random()*validMoves.length)];
     this.moveChosen = true;
-    console.log("Chosen move.");
   }
 }

@@ -1,4 +1,7 @@
 class PlayerAISmartRandomFeedback extends PlayerAI {
+  private movesWithEval!: MoveWithRandomFeedback[];
+  private moveChosen!: boolean;
+
   constructor(markType: MarkType) {
     super(markType);
   }
@@ -137,6 +140,7 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     return boardCopy.getStatus();
   }
 
+  // Deprecated - use moveWithRandomFeedback instead
   // Evaluate position of a board by smart random playouts
   // 1 -> perfect for X
   // 0 -> perfect for O
@@ -155,32 +159,32 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     return absScore / numPlayouts;
   }
 
-  protected performSingleIterCalc(boardCopy: GlobalBoard): void {
+  protected executeBefore(boardCopy: GlobalBoard): void {
+    this.movesWithEval = [];
+    this.moveChosen = false;
+
+    let moves = this.getValidMovesThatDoNotLose(boardCopy);
+    this.movesWithEval = moves.map(move => new MoveWithRandomFeedback(move));
+  }
+
+  protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
     let winningMove = this.getMoveThatWinsGame(boardCopy, this.markType);
     if (winningMove) {
       // Choose winning move if it exists
       this.optimalMove = winningMove;
+      this.moveChosen = true;
       return;
     }
 
-    let moves = this.getValidMovesThatDoNotLose(boardCopy);
-
-    if (moves.length === 0) {
+    if (this.movesWithEval.length === 0) {
       // We're screwed: all moves immediately lose
       this.optimalMove = this.getValidMoves(boardCopy)[0];
+      this.moveChosen = true;
       return;
     }
 
-    let movesWithEval: MoveWithEvaluation[] = moves
-      .map(move => <MoveWithEvaluation> { move: move, eval: 0 });
-    // TODO Magic number
-    // Let's do 3 playouts in total per iteration
-    let numPlayouts = Math.floor(3 / moves.length);
-
-    let optimalMoveWithEval: MoveWithEvaluation = movesWithEval[0];
-
-    // Evaluate all moves and update optimal move
-    for (let moveWithEval of movesWithEval) {
+    // Simulate a single playout for each move and update evaluation
+    for (let moveWithEval of this.movesWithEval) {
       // Make move
       let move = moveWithEval.move;
       let boardPrivateCopy = boardCopy.copy();
@@ -188,17 +192,10 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
       boardPrivateCopy.updateActiveBoards(move.localIndex);
 
       // Evaluate board
-      let evaluation = this.evaluateBoard(boardPrivateCopy,
-                                          this.getOtherMarkType(),
-                                          numPlayouts);
-      moveWithEval.eval = evaluation;
-      
-      if (evaluation > optimalMoveWithEval.eval) {
-        optimalMoveWithEval = moveWithEval;
-      }
+      let result = this.simulatePlayout(boardPrivateCopy,
+                                        this.getOtherMarkType());
+      moveWithEval.update(result);
     }
-
-    this.optimalMove = optimalMoveWithEval.move;
 
     // TODO Delete
 
@@ -212,6 +209,13 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     // console.log(`(Smart Random) My marktype is ${this.markType}`);
 
     console.log("Bruh.");
-    
+  }
+
+  protected executeAfter(boardCopy: GlobalBoard): void {
+    this.optimalMove = this.getValidMoves(boardCopy)[0];
+
+    for (let moveWithEval of this.movesWithEval) {
+      moveWithEval.print();
+    }
   }
 }
