@@ -50,32 +50,27 @@ class PlayerAIMCTS extends PlayerAI {
       prevDepthNodes = currDepthNodes;
       currDepthNodes = [];
     }
-
-    // TODO Delete test
-
-    console.log(this.head.size());
-
-    console.log(this.head.getChildren());
-
-    let moveOne = this.head.getChildren()[80];
-    let moveTwo = moveOne.getChildren()[2];
-    let moveThree = moveTwo.getChildren()[7];
-
-    console.log(moveOne.getChildren());
-    console.log(moveTwo.getChildren());
-
-    let m1 = moveOne.value!;
-    let m2 = moveTwo.value!;
-    let m3 = moveThree.value!;
-
-    boardCopy.setCellValueWithMove(m1.markType!, m1.move);
-    boardCopy.setCellValueWithMove(m2.markType!, m2.move);
-    boardCopy.setCellValueWithMove(m3.markType!, m3.move);
-
-    boardCopy.print();
   }
 
   protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
+    // TODO WIP
+
+    // Select random leaf node
+    let currNode = this.head;
+
+    while (!currNode.isLeaf) {
+      let children = currNode.getChildren();
+      currNode = children[Math.floor(Math.random()*children.length)];
+
+      let board = boardCopy.copy();
+      let moveWithEval = currNode.value!;
+      board.setCellValueWithMove(moveWithEval.markType!, moveWithEval.move);
+      board.updateActiveBoards(moveWithEval.move.localIndex);
+    }
+
+    // Playout
+    // ...
+
     if (this.moveChosen) {
       return;
     }
@@ -83,5 +78,13 @@ class PlayerAIMCTS extends PlayerAI {
     let validMoves = this.getValidMoves(boardCopy);
     this.optimalMove = validMoves[Math.floor(Math.random()*validMoves.length)];
     this.moveChosen = true;
+  }
+
+  protected executeAfter(boardCopy: GlobalBoard): void {
+    // Back-propogate
+    // ...
+
+    // Choose optimal move
+    // ...
   }
 }
