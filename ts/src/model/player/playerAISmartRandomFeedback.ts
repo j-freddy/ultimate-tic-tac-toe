@@ -168,6 +168,10 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
   }
 
   protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
+    if (this.moveChosen) {
+      return;
+    }
+
     let winningMove = this.getMoveThatWinsGame(boardCopy, this.markType);
     if (winningMove) {
       // Choose winning move if it exists
@@ -199,6 +203,10 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
   }
 
   protected executeAfter(boardCopy: GlobalBoard): void {
+    if (this.moveChosen) {
+      return;
+    }
+
     // TODO Refactor duplicate
     if (this.markType === MarkType.X) {
       let bestEval = -Infinity;
