@@ -6,22 +6,6 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     super(markType);
   }
 
-  private markTypeToStatus(markType: MarkType) {
-    return markType === MarkType.O ?
-           BoardStatus.NoughtWin : BoardStatus.CrossWin;
-  }
-
-  private getOtherMarkType(markType: MarkType = this.markType) {
-    return markType === MarkType.O ? MarkType.X : MarkType.O;
-  }
-
-  // Get all valid moves that do not lose immediately
-  private getValidMovesThatDoNotLose(board: GlobalBoard,
-                                     markType: MarkType = this.markType) {
-    let moves = this.getValidMoves(board);
-    return this.filterMovesThatLoseGame(board, markType, moves);
-  }
-
   // Get all moves that wins a local board
   private getMovesThatWinsLocalBoard(board: GlobalBoard,
                                      markType: MarkType): BoardPosition[] {
@@ -41,55 +25,6 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     }
 
     return winningMoves;
-  }
-
-  // Get move that wins game immediately
-  private getMoveThatWinsGame(board: GlobalBoard,
-                              markType: MarkType): BoardPosition | null {
-    for (let move of this.getValidMoves(board)) {
-      // Copy board state and make move
-      let boardCopy = board.copy();
-      boardCopy.setCellValue(markType, move.globalIndex, move.localIndex);
-      boardCopy.updateActiveBoards(move.localIndex);
-
-      // Check win
-      if (boardCopy.getStatus() === this.markTypeToStatus(markType)) {
-        return move;
-      }
-    }
-
-    // No moves win game
-    return null;
-  }
-
-  // Filter moves that loses game immediately
-  // Warning: Can filter the move that wins game immediately
-  // TODO Untested
-  private filterMovesThatLoseGame(board: GlobalBoard, markType: MarkType,
-                                  moves: BoardPosition[]): BoardPosition[] {
-    let filteredMoves = [];
-
-    for (let move of moves) {
-      let boardCopy = board.copy();
-
-      // Make move
-      boardCopy.setCellValue(markType, move.globalIndex, move.localIndex);
-      boardCopy.updateActiveBoards(move.localIndex);
-
-      if (boardCopy.getStatus() !== BoardStatus.InProgress) {
-        // If game ends, opponent can't win
-        filteredMoves.push(move);
-      } else {
-        // See if opponent can win immediately
-        let winningMove = this.getMoveThatWinsGame(boardCopy,
-          this.getOtherMarkType(markType));
-        if (!winningMove) {
-          filteredMoves.push(move);
-        }
-      }
-    }
-
-    return filteredMoves;
   }
 
   private getSmartRandomMove(board: GlobalBoard,

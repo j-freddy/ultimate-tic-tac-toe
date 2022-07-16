@@ -276,9 +276,9 @@ class GUI {
 
       // TODO Write a function for this and pass in MarkType
       if (checkedX.id.includes("ai"))
-        playerCross = new PlayerAISmartRandomFeedback(MarkType.X);
+        playerCross = new PlayerAIMCTS(MarkType.X);
       if (checkedO.id.includes("ai"))
-        playerNought = new PlayerAISmartRandomFeedback(MarkType.O);
+        playerNought = new PlayerAIMCTS(MarkType.O);
 
       switchContextToNewGame(playerCross, playerNought);
     });

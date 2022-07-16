@@ -5,13 +5,19 @@
 */
 class MoveWithPlayouts {
   readonly move: BoardPosition;
+  readonly boardBeforeMove?: GlobalBoard;
+  readonly markType?: MarkType;
   private rawScore: number;
   private numPlayouts: number;
 
-  constructor(move: BoardPosition) {
+  constructor(move: BoardPosition,
+              boardBeforeMove?: GlobalBoard,
+              markType?: MarkType) {
     this.move = move;
     this.rawScore = 0;
     this.numPlayouts = 0;
+    this.boardBeforeMove = boardBeforeMove;
+    this.markType = markType;
   }
 
   getRawScore(): number {

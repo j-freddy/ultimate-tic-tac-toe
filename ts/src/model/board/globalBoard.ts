@@ -130,4 +130,10 @@ class GlobalBoard extends Board {
 
     return new GlobalBoard(boardsCopy, activeBoards, this.status);
   }
+
+  print(): void {
+    for (let board of this.getLocalBoards()) {
+      board.print();
+    }
+  }
 }
