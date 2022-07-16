@@ -1,5 +1,5 @@
 class PlayerAISmartRandomFeedback extends PlayerAI {
-  private movesWithEval!: MoveWithRandomFeedback[];
+  private movesWithEval!: MoveWithPlayouts[];
   private moveChosen!: boolean;
 
   constructor(markType: MarkType) {
@@ -164,7 +164,7 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     this.moveChosen = false;
 
     let moves = this.getValidMovesThatDoNotLose(boardCopy);
-    this.movesWithEval = moves.map(move => new MoveWithRandomFeedback(move));
+    this.movesWithEval = moves.map(move => new MoveWithPlayouts(move));
   }
 
   protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
@@ -196,8 +196,6 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
                                         this.getOtherMarkType());
       moveWithEval.update(result);
     }
-
-    console.log("Bruh.");
   }
 
   protected executeAfter(boardCopy: GlobalBoard): void {

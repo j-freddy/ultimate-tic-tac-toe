@@ -3,7 +3,7 @@
   - 1 -> perfect for X
   - 0 -> perfect for O
 */
-class MoveWithRandomFeedback {
+class MoveWithPlayouts {
   readonly move: BoardPosition;
   private rawScore: number;
   private numPlayouts: number;
