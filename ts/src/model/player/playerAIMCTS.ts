@@ -1,14 +1,25 @@
+interface CacheMCTS {
+  movesNotLosing: BoardPosition[],
+}
+
 class PlayerAIMCTS extends PlayerAI {
   private readonly SEARCH_DEPTH = 3;
   private moveChosen!: boolean;
   private head!: TreeNode<MoveWithPlayouts>;
+  private cache: CacheMCTS;
 
   constructor(markType: MarkType) {
     super(markType);
+    this.cache = {
+      movesNotLosing: [],
+    }
   }
 
   protected executeBefore(boardCopy: GlobalBoard): void {
     this.moveChosen = false;
+
+    // Update cache
+    this.cache.movesNotLosing = this.getValidMovesThatDoNotLose(boardCopy);
 
     // Create tree head
     this.head = new TreeNode<MoveWithPlayouts>();
@@ -84,6 +95,13 @@ class PlayerAIMCTS extends PlayerAI {
     if (winningMove) {
       // Choose winning move if it exists
       this.optimalMove = winningMove;
+      this.moveChosen = true;
+      return;
+    }
+
+    if (this.cache.movesNotLosing.length === 0) {
+      // We're screwed: all moves immediately lose
+      this.optimalMove = this.getValidMoves(boardCopy)[0];
       this.moveChosen = true;
       return;
     }
