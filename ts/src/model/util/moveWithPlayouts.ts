@@ -43,6 +43,11 @@ class MoveWithPlayouts {
     if (result === BoardStatus.Draw)     this.rawScore += 0.5;
   }
 
+  updateAccumulate(rawScore: number, numPlayouts: number) {
+    this.rawScore += rawScore;
+    this.numPlayouts += numPlayouts;
+  }
+
   print(): void {
     console.log(`Move: (${this.move.globalIndex}, ${this.move.localIndex})`);
     console.log(`Raw score: ${this.rawScore}`);

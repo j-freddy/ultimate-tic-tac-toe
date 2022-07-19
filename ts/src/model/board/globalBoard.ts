@@ -132,8 +132,10 @@ class GlobalBoard extends Board {
   }
 
   print(): void {
+    console.log("Start printing local boards");
     for (let board of this.getLocalBoards()) {
       board.print();
     }
+    console.log("Done printing local boards");
   }
 }
