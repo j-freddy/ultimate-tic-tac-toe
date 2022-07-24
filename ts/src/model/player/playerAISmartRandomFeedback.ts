@@ -6,7 +6,7 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     super(markType);
   }
 
-  // Deprecated - use moveWithRandomFeedback instead
+  // DEPRECATED Use moveWithRandomFeedback instead
   // Evaluate position of a board by smart random playouts
   // 1 -> perfect for X
   // 0 -> perfect for O
