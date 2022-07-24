@@ -80,6 +80,7 @@ abstract class Board {
     return true;
   }
 
+  // DEPRECATED Use toString
   print(): void {
     let i = 0;
     let str = "";
@@ -99,5 +100,26 @@ abstract class Board {
     }
 
     console.log(str);
+  }
+
+  toString(): string {
+    let i = 0;
+    let str = "";
+
+    for (let x = 0; x < Board.NUM_COLS; x++) {
+      for (let y = 0; y < Board.NUM_ROWS; y++) {
+        let value = this.cells[i].getValue()?.toString();
+
+        if (!value) {
+          value = "-"
+        }
+
+        str += `${value} `
+        i++;
+      }
+      str += "\n";
+    }
+
+    return str;
   }
 }

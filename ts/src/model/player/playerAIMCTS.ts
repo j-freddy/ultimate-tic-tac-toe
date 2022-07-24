@@ -163,8 +163,10 @@ class PlayerAIMCTS extends PlayerAI {
     }
 
     // Print information
+    let str = "";
     for (let moveWithEval of movesWithEval) {
-      moveWithEval.print();
+      str += moveWithEval.toString() + "\n\n";
     }
+    console.log(str);
   }
 }

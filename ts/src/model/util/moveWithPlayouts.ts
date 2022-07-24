@@ -48,10 +48,18 @@ class MoveWithPlayouts {
     this.numPlayouts += numPlayouts;
   }
 
+  // DEPRECATED Use toString
   print(): void {
     console.log(`Move: (${this.move.globalIndex}, ${this.move.localIndex})`);
     console.log(`Raw score: ${this.rawScore}`);
     console.log(`Number of playouts: ${this.numPlayouts}`);
     console.log(`Evaluation: ${this.eval()}`);
+  }
+
+  toString(): string {
+    return `Move: (${this.move.globalIndex}, ${this.move.localIndex})\n` +
+           `Raw score: ${this.rawScore}\n` +
+           `Number of playouts: ${this.numPlayouts}\n` +
+           `Evaluation: ${this.eval()}`;
   }
 }

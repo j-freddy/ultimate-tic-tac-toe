@@ -95,8 +95,10 @@ class PlayerAISmartRandomFeedback extends PlayerAI {
     }
 
     // Print information
+    let str = "";
     for (let moveWithEval of this.movesWithEval) {
-      moveWithEval.print();
+      str += moveWithEval.toString() + "\n\n";
     }
+    console.log(str);
   }
 }

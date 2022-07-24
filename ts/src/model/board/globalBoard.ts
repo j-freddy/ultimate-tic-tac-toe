@@ -131,11 +131,22 @@ class GlobalBoard extends Board {
     return new GlobalBoard(boardsCopy, activeBoards, this.status);
   }
 
+  // DEPRECATED Use toString
   print(): void {
     console.log("Start printing local boards");
     for (let board of this.getLocalBoards()) {
       board.print();
     }
     console.log("Done printing local boards");
+  }
+
+  toString(): string {
+    let str = "";
+
+    for (let board of this.getLocalBoards()) {
+      str += board.toString() + "\n\n";
+    }
+
+    return str;
   }
 }
