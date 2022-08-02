@@ -84,10 +84,10 @@ abstract class PlayerAI implements Player {
     });
   }
 
-  // ###########################################################################
+  // ===========================================================================
   // The rest of this class consists of useful methods that assist making an AI
   // Methods shared across multiple AIs are also here
-  // ###########################################################################
+  // ===========================================================================
 
   protected getValidMoves(board: GlobalBoard): BoardPosition[] {
     let validMoves: BoardPosition[] = [];
