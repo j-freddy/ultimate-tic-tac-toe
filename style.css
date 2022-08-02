@@ -17,6 +17,10 @@
   font-weight: bold;
 }
 
-.wrapper #config .btn-group label {
-  width: 88px;
+.wrapper #config .player-select label {
+  line-height: 1.25;
+}
+
+.wrapper #config .player-select label small {
+  font-size: 10px;
 }
