@@ -210,6 +210,25 @@ class GUI {
     }
   }
 
+  private getPlayerType(buttonId: string):
+    typeof PlayerHuman |
+    typeof PlayerAIRandom |
+    typeof PlayerAISmartRandomFeedback |
+    typeof PlayerAIMCTS
+  {
+    if (buttonId.includes("human")) {
+      return PlayerHuman;
+    } else if (buttonId.includes("ai-easy")) {
+      return PlayerAIRandom;
+    } else if (buttonId.includes("ai-medium")) {
+      return PlayerAISmartRandomFeedback;
+    } else if (buttonId.includes("ai-hard")) {
+      return PlayerAIMCTS;
+    }
+
+    throw new Error("Unable to identify player type");
+  }
+
   private startObservables() {
     canvas.addEventListener("mousemove", e => {
       if (this.game.ended()) {
@@ -271,16 +290,11 @@ class GUI {
       let checkedO = <HTMLElement> document.querySelector(
         "input[name='radio-player-o']:checked");
 
-      let playerCross: Player = new PlayerHuman(MarkType.X);
-      let playerNought: Player = new PlayerHuman(MarkType.O);
+      let PlayerTypeX = this.getPlayerType(checkedX.id);
+      let PlayerTypeO = this.getPlayerType(checkedO.id);
 
-      // TODO Write a function for this and pass in MarkType
-      if (checkedX.id.includes("ai"))
-        playerCross = new PlayerAIMCTS(MarkType.X);
-      if (checkedO.id.includes("ai"))
-        playerNought = new PlayerAIMCTS(MarkType.O);
-
-      switchContextToNewGame(playerCross, playerNought);
+      switchContextToNewGame(new PlayerTypeX(MarkType.X),
+                             new PlayerTypeO(MarkType.O));
     });
   }
 }
