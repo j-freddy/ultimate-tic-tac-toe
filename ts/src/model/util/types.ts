@@ -1,7 +1,7 @@
 type BoardPosition = {
   globalIndex: number;
   localIndex: number;
-}
+};
 
 type CellWithPosition = {
   cell: Cell;

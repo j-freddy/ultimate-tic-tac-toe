@@ -28,9 +28,9 @@ class MoveWithPlayouts {
     return this.numPlayouts;
   }
 
-  eval(): number {
+  eval(allowInfinity: boolean = false): number {
     if (this.numPlayouts === 0) {
-      return 0;
+      return allowInfinity ? Infinity : 0;
     }
 
     return this.rawScore / this.numPlayouts;

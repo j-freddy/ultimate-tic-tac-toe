@@ -1,88 +1,64 @@
-interface CacheMCTS {
-  movesNotLosing: BoardPosition[],
-}
-
 class PlayerAIMCTS extends PlayerAI {
-  private readonly SEARCH_DEPTH = 3;
   private moveChosen!: boolean;
   private head!: TreeNode<MoveWithPlayouts>;
-  private cache: CacheMCTS;
 
   constructor(markType: MarkType) {
     super(markType);
-    this.cache = {
-      movesNotLosing: [],
-    }
   }
 
   protected executeBefore(boardCopy: GlobalBoard): void {
     this.moveChosen = false;
 
-    // Update cache
-    this.cache.movesNotLosing = this.getValidMovesThatDoNotLose(boardCopy);
+    // Build initial tree as a head with valid next moves as children
+    this.head = new TreeNode(new MoveWithPlayouts(
+      // TODO Spaghetti
+      { globalIndex: -1, localIndex: -1 },
+      boardCopy.copy()
+    ));
 
-    // Create tree head
-    this.head = new TreeNode<MoveWithPlayouts>();
+    const moves = this.getValidMovesThatDoNotLose(boardCopy);
+    const children = moves.map(move => {
+      return new TreeNode(
+        new MoveWithPlayouts(move, boardCopy.copy(), this.markType)
+      );
+    });
 
-    // Create tree body
-    let prevDepthNodes = [this.head];
-    let currDepthNodes = [];
-
-    for (let i = 0; i < this.SEARCH_DEPTH; i++) {
-      for (let moveNode of prevDepthNodes) {
-        // Current board
-        let board: GlobalBoard;
-
-        if (i === 0) {
-          board = boardCopy;
-        } else {
-          let moveWithEval = moveNode.value!;
-          board = moveWithEval.boardBeforeMove!; 
-          board.setCellValueWithMove(moveWithEval.markType!, moveWithEval.move);
-          board.updateActiveBoards(moveWithEval.move.localIndex);
-        }
-
-        let moves = this.getValidMovesThatDoNotLose(board);
-
-        // When i = 0, it is our move
-        // Players take turns moving
-        let markType = (i % 2 === 0) ? this.markType : this.getOtherMarkType();
-
-        let children = moves.map(move => {
-          return new TreeNode(
-            new MoveWithPlayouts(move, board.copy(), markType)
-          );
-        });
-
-        moveNode.setChildren(children);
-        currDepthNodes.push(...children);
-      }
-
-      prevDepthNodes = currDepthNodes;
-      currDepthNodes = [];
-    }
+    this.head.setChildren(children);
   }
 
-  private executeMCTSIter(boardCopy: GlobalBoard): void {
-    // Select random leaf node and update board
-    let currNode = this.head;
-    let currMarkType = this.markType;
+  private calcUCT(child: TreeNode<MoveWithPlayouts>,
+                  parent: TreeNode<MoveWithPlayouts>): number {
+    const childPlayouts = child.value!.getNumPlayouts();
 
-    while (!currNode.isLeaf()) {
-      let children = currNode.getChildren();
-      currNode = children[Math.floor(Math.random()*children.length)];
-      let moveWithEval = currNode.value!;
-      // Update board
-      boardCopy.setCellValueWithMove(moveWithEval.markType!, moveWithEval.move);
-      boardCopy.updateActiveBoards(moveWithEval.move.localIndex);
-      currMarkType = this.getOtherMarkType(currMarkType);
+    if (childPlayouts === 0) {
+      return Infinity;
     }
 
-    let chosenNode = currNode;
+    const parentPlayouts = parent.value!.getNumPlayouts();
+    return child.value!.eval(true) + 2 * Math.sqrt(
+      Math.log(parentPlayouts) / childPlayouts
+    );
+  }
 
-    // Playout: Simulate game until it ends
-    let result = this.simulatePlayout(boardCopy, currMarkType);
-    chosenNode.value!.update(result);
+  private getChildWithTopUCT(parent: TreeNode<MoveWithPlayouts>) {
+    if (parent.getChildren().length == 0) {
+      throw new Error("Trying to get top UCT child of a childless node");
+    }
+
+    let topChild = parent.getChildren()[0];
+    let topScore = -Infinity;
+
+    for (const child of parent.getChildren()) {
+      const score = this.calcUCT(child, parent);
+
+      if (score > topScore) {
+        topChild = child;
+        topScore = score;
+      }
+    }
+
+    console.log(`Top score: ${topScore}`)
+    return topChild;
   }
 
   protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
@@ -90,83 +66,58 @@ class PlayerAIMCTS extends PlayerAI {
       return;
     }
 
-    // TODO Memoise winning move
-    let winningMove = this.getMoveThatWinsGame(boardCopy, this.markType);
-    if (winningMove) {
-      // Choose winning move if it exists
-      this.optimalMove = winningMove;
-      this.moveChosen = true;
-      return;
+    // TODO DELETE
+    let validMoves = this.getValidMoves(boardCopy);
+    this.optimalMove = validMoves[Math.floor(Math.random()*validMoves.length)];
+    this.moveChosen = true;
+    // TODO END OF DELETE
+
+    // Selection
+    let currNode = this.head;
+    let currMarkType = this.markType;
+
+    while (!currNode.isLeaf()) {
+      currNode = this.getChildWithTopUCT(currNode);
+      let moveWithEval = currNode.value!;
+      console.log(moveWithEval);
+      // Update board
+      boardCopy.setCellValueWithMove(moveWithEval.markType!, moveWithEval.move);
+      boardCopy.updateActiveBoards(moveWithEval.move.localIndex);
+      // Keep track of mark type
+      currMarkType = this.getOtherMarkType(currMarkType);
     }
 
-    if (this.cache.movesNotLosing.length === 0) {
-      // We're screwed: all moves immediately lose
-      this.optimalMove = this.getValidMoves(boardCopy)[0];
-      this.moveChosen = true;
-      return;
-    }
+    // Expansion
+    if (currNode.value!.getNumPlayouts() > 0) {
+      const moves = this.getValidMovesThatDoNotLose(boardCopy);
+      const children = moves.map(move => {
+        return new TreeNode(
+          new MoveWithPlayouts(move, boardCopy.copy(), currMarkType)
+        );
+      });
+      currNode.setChildren(children);
 
-    // TODO Magic number
-    for (let i = 0; i < 8; i++) {
-      let board = boardCopy.copy();
-      this.executeMCTSIter(board);
-    }
-  }
-
-  private updateTreeNode(node: TreeNode<MoveWithPlayouts>): void {
-    if (node.isLeaf()) {
-      return;
-    }
-
-    let rawScore = 0;
-    let numPlayouts = 0;
-
-    for (let child of node.getChildren()) {
-      this.updateTreeNode(child);
-      rawScore += child.value!.getRawScore();
-      numPlayouts += child.value!.getNumPlayouts();
-    }
-
-    node.value!.updateAccumulate(rawScore, numPlayouts);
-  }
-
-  protected executeAfter(boardCopy: GlobalBoard): void {
-    let children = this.head.getChildren();
-
-    // Back-propogate
-    for (let child of children) {
-      this.updateTreeNode(child);
-    }
-
-    // Choose optimal move
-    let movesWithEval = children.map(node => node.value!);
-
-    // TODO Refactor duplicate
-    if (this.markType === MarkType.X) {
-      let bestEval = -Infinity;
-
-      for (let moveWithEval of movesWithEval) {
-        if (moveWithEval.eval() > bestEval) {
-          bestEval = moveWithEval.eval();
-          this.optimalMove = moveWithEval.move;
-        }
-      }
-    } else {
-      let bestEval = Infinity;
-
-      for (let moveWithEval of movesWithEval) {
-        if (moveWithEval.eval() < bestEval) {
-          bestEval = moveWithEval.eval();
-          this.optimalMove = moveWithEval.move;
-        }
+      if (children.length > 0) {
+        currNode = children[0];
+        const moveWithEval = currNode.value!;
+        // Update board
+        boardCopy.setCellValueWithMove(
+          moveWithEval.markType!, moveWithEval.move
+        );
+        boardCopy.updateActiveBoards(moveWithEval.move.localIndex);
+        // Keep track of mark type
+        currMarkType = this.getOtherMarkType(currMarkType);
       }
     }
 
-    // Print information
-    let str = "";
-    for (let moveWithEval of movesWithEval) {
-      str += moveWithEval.toString() + "\n\n";
-    }
-    console.log(str);
+    // Simulation
+    const chosenNode = currNode;
+    const result = this.simulatePlayout(boardCopy, currMarkType);
+    chosenNode.value!.update(result);
+
+    // Backpropagation
+    // TODO Update TreeNode with parent
+    // Or keep track of parents (use a stack, pop & push from end)
+    console.log(chosenNode.value!);
   }
 }
