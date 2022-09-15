@@ -35,7 +35,18 @@ class PlayerAIMCTS extends PlayerAI {
     }
 
     const parentPlayouts = parent.value!.getNumPlayouts();
-    return child.value!.eval(true) + 2 * Math.sqrt(
+
+    let evaluation = child.value!.eval(true);
+    // Currently we have:
+    //   evaluation = 1 -> perfect for X
+    //   evaluation = 0 -> perfect for O
+    // We need to map this to the following for UCT:
+    //   evaluation = 1 -> perfect for AI
+    if (this.markType === MarkType.O) {
+      evaluation = 1 - evaluation;
+    }
+
+    return evaluation + 2 * Math.sqrt(
       Math.log(parentPlayouts) / childPlayouts
     );
   }
@@ -57,29 +68,20 @@ class PlayerAIMCTS extends PlayerAI {
       }
     }
 
-    console.log(`Top score: ${topScore}`)
     return topChild;
   }
 
-  protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
-    if (this.moveChosen) {
-      return;
-    }
-
-    // TODO DELETE
-    let validMoves = this.getValidMoves(boardCopy);
-    this.optimalMove = validMoves[Math.floor(Math.random()*validMoves.length)];
-    this.moveChosen = true;
-    // TODO END OF DELETE
-
+  private executeMCTSIter(boardCopy: GlobalBoard): void {
     // Selection
     let currNode = this.head;
     let currMarkType = this.markType;
+    // Keep track of parents for backpropagation
+    let parents: TreeNode<MoveWithPlayouts>[] = [];
 
     while (!currNode.isLeaf()) {
+      parents.push(currNode);
       currNode = this.getChildWithTopUCT(currNode);
       let moveWithEval = currNode.value!;
-      console.log(moveWithEval);
       // Update board
       boardCopy.setCellValueWithMove(moveWithEval.markType!, moveWithEval.move);
       boardCopy.updateActiveBoards(moveWithEval.move.localIndex);
@@ -98,6 +100,7 @@ class PlayerAIMCTS extends PlayerAI {
       currNode.setChildren(children);
 
       if (children.length > 0) {
+        parents.push(currNode);
         currNode = children[0];
         const moveWithEval = currNode.value!;
         // Update board
@@ -116,8 +119,55 @@ class PlayerAIMCTS extends PlayerAI {
     chosenNode.value!.update(result);
 
     // Backpropagation
-    // TODO Update TreeNode with parent
-    // Or keep track of parents (use a stack, pop & push from end)
-    console.log(chosenNode.value!);
+    for (let node of parents) {
+      node.value!.update(result);
+    }
+  }
+
+  protected executeSingleIterCalc(boardCopy: GlobalBoard): void {
+    if (this.moveChosen) {
+      return;
+    }
+
+    // TODO Magic number
+    for (let i = 0; i < 24; i++) {
+      let board = boardCopy.copy();
+      this.executeMCTSIter(board);
+    }
+  }
+
+  protected executeAfter(boardCopy: GlobalBoard): void {
+    let children = this.head.getChildren();
+    let movesWithEval = children.map(node => node.value!);
+
+    // Choose optimal move
+    // TODO Refactor duplicate
+    if (this.markType === MarkType.X) {
+      let bestEval = -Infinity;
+
+      for (let moveWithEval of movesWithEval) {
+        if (moveWithEval.eval() > bestEval) {
+          bestEval = moveWithEval.eval();
+          this.optimalMove = moveWithEval.move;
+        }
+      }
+    } else {
+      let bestEval = Infinity;
+
+      for (let moveWithEval of movesWithEval) {
+        if (moveWithEval.eval() < bestEval) {
+          bestEval = moveWithEval.eval();
+          this.optimalMove = moveWithEval.move;
+        }
+      }
+    }
+
+    // Print information
+    let str = "";
+    for (let moveWithEval of movesWithEval) {
+      str += moveWithEval.toString() + "\n\n";
+    }
+    console.log(str);
+    console.log(this.head.size());
   }
 }
