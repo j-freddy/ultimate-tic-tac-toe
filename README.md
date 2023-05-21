@@ -1,18 +1,8 @@
 # Ultimate Tic-Tac-Toe
 
-## Installation
+![Preview](img/preview.png)
 
 Play the game [here][1]!
-
-### Build
-
-This project is written in [TypeScript][2] with no external packages.
-
-```sh
-tsc
-```
-
-Alternatively, use the Makefile commands if you have the Make tool.
 
 ## Instructions
 
@@ -26,6 +16,22 @@ winning on the big grid.
 You can configure players via `Config > Update Player X/O > New Game`.
 
 You can also have 2 AIs battle it out!
+
+## Installation
+
+### Play online
+
+Play the game [here][1]!
+
+### Build
+
+This project is written in [TypeScript][2] with no external packages.
+
+```sh
+tsc
+```
+
+Alternatively, use the Makefile commands if you have the Make tool.
 
 [1]: https://j-freddy.github.io/games/ultimate-tic-tac-toe/
 [2]: https://www.typescriptlang.org/download
