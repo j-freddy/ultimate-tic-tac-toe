@@ -1,18 +1,16 @@
 # Ultimate Tic-Tac-Toe
 
-## Installation
-
 Play the game [here][1]!
+
+## Installation
 
 ### Build
 
 This project is written in [TypeScript][2] with no external packages.
-
 ```sh
-tsc
+npm install
+npm run build
 ```
-
-Alternatively, use the Makefile commands if you have the Make tool.
 
 ## Instructions
 
@@ -27,6 +25,6 @@ You can configure players via `Config > Update Player X/O > New Game`.
 
 You can also have 2 AIs battle it out!
 
-[1]: https://j-freddy.github.io/games/ultimate-tic-tac-toe/
+[1]: https://ultimate-tic-tac-toe.jtflabs.dev/
 [2]: https://www.typescriptlang.org/download
 [3]: https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe#Rules
